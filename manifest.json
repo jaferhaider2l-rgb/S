@@ -8,7 +8,12 @@
   "description": "البوابة الإلكترونية الذكية والتفاعلية لمدرسة الهندية الابتدائية للبنين",
   "icons": [
     {
-      "src": "https://i.supaimg.com/be9c17d5-b3ba-430d-997c-42bd8ba22dc9/7f9fc623-cb9a-4db4-ac98-a7d385f672ed.jpg",
+      "src": "Https://i.supaimg.com/be9c17d5-b3ba-430d-997c-42bd8ba22dc9/7f9fc623-cb9a-4db4-ac98-a7d385f672ed.jpg",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "Https://i.supaimg.com/be9c17d5-b3ba-430d-997c-42bd8ba22dc9/7f9fc623-cb9a-4db4-ac98-a7d385f672ed.jpg",
       "sizes": "512x512",
       "type": "image/png"
     }
