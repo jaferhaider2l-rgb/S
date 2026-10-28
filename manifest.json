@@ -2,6 +2,7 @@
   "name": "مدرسة الهندية الابتدائية للبنين",
   "short_name": "مدرسة الهندية",
   "start_url": "/S/",
+  "scope": "/S/",
   "display": "standalone",
   "background_color": "#1e3a8a",
   "theme_color": "#1e3a8a",
