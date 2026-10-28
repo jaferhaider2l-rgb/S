@@ -1,0 +1,16 @@
+{
+  "name": "مدرسة الهندية الابتدائية للبنين",
+  "short_name": "مدرسة الهندية",
+  "start_url": "/S/",
+  "display": "standalone",
+  "background_color": "#1e3a8a",
+  "theme_color": "#1e3a8a",
+  "description": "البوابة الإلكترونية الذكية والتفاعلية لمدرسة الهندية الابتدائية للبنين",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/512x512/1e3a8a/FFFFFF?text=School",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
