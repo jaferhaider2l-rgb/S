@@ -9,12 +9,12 @@
   "description": "البوابة الإلكترونية الذكية والتفاعلية لمدرسة الهندية الابتدائية للبنين",
   "icons": [
     {
-      "src": "abbas.png",
+      "src": "https://raw.githubusercontent.com/jaferhaider2l-rgb/S/main/abbas.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "abbas.png",
+      "src": "https://raw.githubusercontent.com/jaferhaider2l-rgb/S/main/abbas.png",
       "sizes": "512x512",
       "type": "image/png"
     }
