@@ -1,0 +1,332 @@
+:root {
+    --primary-color: #1e3a8a;
+    --accent-color: #3b82f6;  
+    --indigo-color: #4f46e5;  
+    --bg-color: #f1f5f9;      
+    --card-bg: #ffffff;
+    --text-color: #0f172a;
+    --sub-text-color: #64748b;
+    --nav-bg: #ffffff;
+}
+
+body.dark-mode {
+    --primary-color: #3b82f6;
+    --indigo-color: #6366f1;
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --text-color: #f8fafc;
+    --sub-text-color: #94a3b8;
+    --nav-bg: #1e293b;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    direction: rtl;
+    text-align: right;
+    padding-bottom: 75px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.hero-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #4f46e5 100%);
+    color: white;
+    padding: 24px 15px;
+    text-align: center;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+    position: relative;
+}
+
+.theme-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-header h1 {
+    font-size: 19px;
+    margin: 0 0 5px 0;
+    cursor: pointer;
+    user-select: none;
+}
+
+.hero-header p {
+    font-size: 12px;
+    margin: 0;
+    opacity: 0.85;
+}
+
+.container {
+    padding: 15px;
+    max-width: 500px;
+    margin: auto;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.card {
+    background: var(--card-bg);
+    color: var(--text-color);
+    margin-bottom: 15px;
+    padding: 18px;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-top: 4px solid var(--indigo-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.main-card { border-top-color: var(--primary-color); }
+.secondary-card { border-top-color: var(--accent-color); }
+
+.card h2 {
+    font-size: 16px;
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.sub-text {
+    font-size: 12px;
+    color: var(--sub-text-color);
+}
+
+.days-selector {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+}
+
+.day-btn {
+    background: var(--bg-color);
+    border: 1px solid var(--sub-text-color);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--text-color);
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.day-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: transparent;
+}
+
+.schedule-image-container img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.news-card {
+    border: 1px solid var(--sub-text-color);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+    background: var(--card-bg);
+}
+
+.news-badge {
+    background: var(--primary-color);
+    color: white;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.news-img {
+    width: 100%;
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+/* تنسيق بطاقات الشكاوى للعامة */
+.public-complaint-box {
+    border: 1px solid var(--sub-text-color);
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background: var(--bg-color);
+}
+
+.complaint-msg {
+    font-size: 13px;
+    margin: 4px 0;
+}
+
+.reply-status {
+    font-size: 12px;
+    font-weight: bold;
+    color: #eab308;
+    margin: 4px 0 0 0;
+}
+
+.reply-status.replied {
+    color: #22c55e;
+}
+
+.file-upload-label {
+    display: block;
+    background: rgba(79, 70, 229, 0.1);
+    color: var(--indigo-color);
+    padding: 12px;
+    text-align: center;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 6px 0;
+    border: 1px dashed var(--indigo-color);
+}
+
+.file-name {
+    display: block;
+    font-size: 11px;
+    color: var(--sub-text-color);
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+input, textarea, select {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 6px 0;
+    padding: 11px;
+    border: 1px solid var(--sub-text-color);
+    border-radius: 8px;
+    font-size: 14px;
+    background: var(--card-bg);
+    color: var(--text-color);
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 11px;
+    width: 100%;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 6px;
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--nav-bg);
+    display: flex;
+    justify-content: space-around;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.06);
+    z-index: 1000;
+    height: 62px;
+    border-top: 2px solid rgba(100,100,100,0.1);
+    transition: background-color 0.3s;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--sub-text-color);
+    flex-grow: 1;
+}
+
+.nav-icon { font-size: 19px; }
+
+.nav-item small {
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.nav-item.active {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+/* تصميم النافذة المنبثقة العصرية لكلمة المرور */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(15, 23, 42, 0.7);
+    overflow: auto;
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 16px;
+    width: 85%;
+    max-width: 400px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.custom-dialog h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+
+.close-btn {
+    float: left;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    color: var(--sub-text-color);
+}
+
+.admin-section {
+    border-bottom: 1px dashed var(--sub-text-color);
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+}
+
+.admin-complaint-box {
+    background: var(--bg-color);
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    border: 1px solid var(--sub-text-color);
+}
+
+.reply-text {
+    color: var(--primary-color);
+    font-weight: bold;
+    margin: 4px 0 0 0;
+}

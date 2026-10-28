@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة مدرسة الهندية الابتدائية للبنين</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body id="pageBody">
+
+    <!-- الترويسة مع زر التبديل الليلي/النهاري -->
+    <header class="hero-header">
+        <button id="themeToggleBtn" class="theme-btn" onclick="toggleTheme()" title="تغيير الوضع">🌙</button>
+        <h1 id="secretAdminTitle">مدرسة الهندية الابتدائية للبنين</h1>
+        <p>البوابة الإلكترونية الذكية والتفاعلية</p>
+    </header>
+
+    <!-- محتوى الصفحات الرئيسي -->
+    <main class="container">
+        
+        <!-- قسم الرئيسية -->
+        <section id="home" class="tab-content active">
+            <div class="card main-card">
+                <h2>أهلاً بكم في البوابة المدرسية</h2>
+                <p>مرحباً بأبنائنا الطلبة وأولياء الأمور الكرام. تابعوا التبليغات والجداول الدراسية أسبوعياً بكل سهولة.</p>
+            </div>
+            <div class="card secondary-card">
+                <h2>📢 إعلان هام للإدارة</h2>
+                <p>يرجى متابعة قسم التبليغات يومياً لمعرفة آخر الأخبار والتعليمات والتعاميم الصادرة رسمياً.</p>
+            </div>
+        </section>
+
+        <!-- قسم الجداول الأسبوعية -->
+        <section id="schedule" class="tab-content">
+            <div class="card">
+                <h2>📅 جدول الحصص الأسبوعي (الأحد - الخميس)</h2>
+                <p class="sub-text">اختر اليوم لعرض الجدول الدراسي الخاص به:</p>
+                
+                <div class="days-selector">
+                    <button class="day-btn active" onclick="showDaySchedule('sunday', this)">الأحد</button>
+                    <button class="day-btn" onclick="showDaySchedule('monday', this)">الإثنين</button>
+                    <button class="day-btn" onclick="showDaySchedule('tuesday', this)">الثلاثاء</button>
+                    <button class="day-btn" onclick="showDaySchedule('wednesday', this)">الأربعاء</button>
+                    <button class="day-btn" onclick="showDaySchedule('thursday', this)">الخميس</button>
+                </div>
+
+                <div class="schedule-image-container">
+                    <img id="scheduleImg" src="https://via.placeholder.com/600x400/1e3a8a/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D8%A7%D9%84%D8%AD%D8%B5%D8%B5" alt="جدول الحصص">
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم التبليغات الفورية -->
+        <section id="news" class="tab-content">
+            <div class="card">
+                <h2>🔔 التبليغات والإعلام المدرسي</h2>
+                <div id="newsFeed">
+                    <div class="news-card">
+                        <span class="news-badge">عاجل</span>
+                        <h3>بداية الدوام الرسمي</h3>
+                        <p>نذكر أوليائنا الكرام بضرورة الالتزام بمواعيد الحضور الصباحي للطلاب.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم الشكاوى والتواصل مع إمكانية رؤية الردود -->
+        <section id="contact" class="tab-content">
+            <div class="card">
+                <h2>✉️ الشكاوى والمقترحات</h2>
+                <form id="complaintForm" onsubmit="submitComplaint(event)">
+                    <input type="text" id="parentName" placeholder="اسم ولي الأمر" required>
+                    <input type="tel" id="parentPhone" placeholder="رقم الهاتف" required>
+                    <textarea id="parentMsg" placeholder="اكتب الشكوى أو المقترح ليتم الرد عليها من الإدارة..." rows="3" required></textarea>
+                    <button type="submit" class="btn-primary">إرسال للإدارة</button>
+                </form>
+            </div>
+
+            <!-- عرض الشكاوى والردود الصادرة من الإدارة -->
+            <div class="card">
+                <h2>💬 متابعة ردود الإدارة على الرسائل</h2>
+                <div id="publicComplaintsList">
+                    <p class="sub-text">لم يتم إرسال أي شكوى بعد.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- نافذة كلمة المرور المنبثقة (عصرية وتفاعلية) -->
+        <div id="passwordModal" class="modal">
+            <div class="modal-content custom-dialog">
+                <span class="close-btn" onclick="closePasswordModal()">&times;</span>
+                <h3>🔐 تسجيل الدخول للإدارة</h3>
+                <p class="sub-text">أدخل كلمة المرور للوصول إلى لوحة التحكم:</p>
+                <input type="password" id="adminPassInput" placeholder="كلمة المرور (2027)">
+                <button class="btn-primary" onclick="verifyPassword()">دخول</button>
+            </div>
+        </div>
+
+        <!-- لوحة الإدارة المنبثقة -->
+        <div id="adminModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeAdminPanel()">&times;</span>
+                <h2>⚙️ لوحة تحكم الإدارة</h2>
+                
+                <!-- إضافة تبليغ -->
+                <div class="admin-section">
+                    <h3>1. إضافة تبليغ جديد</h3>
+                    <input type="text" id="adminNewsTitle" placeholder="عنوان التبليغ">
+                    <textarea id="adminNewsText" placeholder="نص التبليغ..."></textarea>
+                    <label class="file-upload-label">
+                        🖼️ اختر صورة التبليغ من المعرض:
+                        <input type="file" id="adminNewsImgFile" accept="image/*" style="display:none;" onchange="previewNewsImage(event)">
+                    </label>
+                    <span id="newsFileName" class="file-name">لم يتم اختيار صورة</span>
+                    <button class="btn-primary" onclick="addNewsFromAdmin()">نشر التبليغ</button>
+                </div>
+
+                <!-- تحديث جدول اليوم -->
+                <div class="admin-section">
+                    <h3>2. تحديث جدول الحصص (من المعرض)</h3>
+                    <select id="adminSelectDay">
+                        <option value="sunday">الأحد</option>
+                        <option value="monday">الإثنين</option>
+                        <option value="tuesday">الثلاثاء</option>
+                        <option value="wednesday">الأربعاء</option>
+                        <option value="thursday">الخميس</option>
+                    </select>
+                    <label class="file-upload-label">
+                        🖼️ اختر صورة الجدول الجديدة من المعرض:
+                        <input type="file" id="adminScheduleImgFile" accept="image/*" style="display:none;" onchange="previewScheduleImage(event)">
+                    </label>
+                    <span id="scheduleFileName" class="file-name">لم يتم اختيار صورة</span>
+                    <button class="btn-primary" onclick="updateScheduleFromAdmin()">حفظ وتحديث جدول اليوم</button>
+                </div>
+
+                <!-- الرد على الشكاوى -->
+                <div class="admin-section">
+                    <h3>3. الشكاوى الواردة والرد عليها</h3>
+                    <div id="adminComplaintsList">
+                        <p class="sub-text">لا توجد شكاوى جديدة حالياً.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- شريط التنقل السفلي -->
+    <nav class="bottom-nav">
+        <a href="#home" class="nav-item active" onclick="switchTab('home', event)">
+            <span class="nav-icon">🏠</span>
+            <small>الرئيسية</small>
+        </a>
+        <a href="#schedule" class="nav-item" onclick="switchTab('schedule', event)">
+            <span class="nav-icon">📅</span>
+            <small>الجداول</small>
+        </a>
+        <a href="#news" class="nav-item" onclick="switchTab('news', event)">
+            <span class="nav-icon">🔔</span>
+            <small>التبليغات</small>
+        </a>
+        <a href="#contact" class="nav-item" onclick="switchTab('contact', event)">
+            <span class="nav-icon">✉️</span>
+            <small>الشكاوى</small>
+        </a>
+    </nav>
+
+    <script>
+        const scheduleImages = {
+            sunday: "https://via.placeholder.com/600x400/1e3a8a/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%A3%D8%AD%D8%AF",
+            monday: "https://via.placeholder.com/600x400/1e40af/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%A5%D8%AB%D9%86%D9%8A%D9%86",
+            tuesday: "https://via.placeholder.com/600x400/3b82f6/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%AB%D9%84%D8%A7%D8%AB%D8%A7%D8%A1",
+            wednesday: "https://via.placeholder.com/600x400/4f46e5/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%A3%D8%B1%D8%A8%D8%B9%D8%A7%D8%A1",
+            thursday: "https://via.placeholder.com/600x400/312e81/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%AE%D9%85%D9%8A%D8%B3"
+        };
+
+        let complaints = [];
+        let tempNewsImage = "";
+        let tempScheduleImage = "";
+
+        function switchTab(tabId, event) {
+            event.preventDefault();
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function showDaySchedule(day, btn) {
+            document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('scheduleImg').src = scheduleImages[day];
+        }
+
+        // 3 ضغطات لفتح نافذة كلمة المرور
+        let clickCount = 0;
+        let clickTimer = null;
+
+        document.getElementById('secretAdminTitle').addEventListener('click', function() {
+            clickCount++;
+            if(clickCount === 1) {
+                clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
+            } else if(clickCount === 3) {
+                clearTimeout(clickTimer);
+                clickCount = 0;
+                document.getElementById('passwordModal').style.display = 'block';
+            }
+        });
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+            document.getElementById('adminPassInput').value = '';
+        }
+
+        function verifyPassword() {
+            const pass = document.getElementById('adminPassInput').value;
+            if(pass === "2027") {
+                closePasswordModal();
+                document.getElementById('adminModal').style.display = 'block';
+            } else {
+                alert("كلمة المرور غير صحيحة!");
+            }
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+
+        function toggleTheme() {
+            const body = document.getElementById('pageBody');
+            body.classList.toggle('dark-mode');
+            const btn = document.getElementById('themeToggleBtn');
+            btn.innerText = body.classList.contains('dark-mode') ? "☀️" : "🌙";
+        }
+
+        function previewNewsImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('newsFileName').innerText = file.name;
+                const reader = new FileReader();
+                reader.onload = function(e) { tempNewsImage = e.target.result; }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function previewScheduleImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('scheduleFileName').innerText = file.name;
+                const reader = new FileReader();
+                reader.onload = function(e) { tempScheduleImage = e.target.result; }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addNewsFromAdmin() {
+            const title = document.getElementById('adminNewsTitle').value;
+            const text = document.getElementById('adminNewsText').value;
+
+            if(!title || !text) { alert('يرجى كتابة العنوان والنص'); return; }
+
+            const newsContainer = document.getElementById('newsFeed');
+            const newCard = document.createElement('div');
+            newCard.className = 'news-card';
+            newCard.innerHTML = `
+                <span class="news-badge">عاجل</span>
+                <h3>${title}</h3>
+                <p>${text}</p>
+                ${tempNewsImage ? `<img src="${tempNewsImage}" class="news-img" alt="صورة">` : ''}
+            `;
+            newsContainer.prepend(newCard);
+            alert('تم نشر التبليغ بنجاح!');
+            closeAdminPanel();
+        }
+
+        function updateScheduleFromAdmin() {
+            const day = document.getElementById('adminSelectDay').value;
+            if(tempScheduleImage) {
+                scheduleImages[day] = tempScheduleImage;
+                document.getElementById('scheduleImg').src = tempScheduleImage;
+                alert('تم تحديث جدول اليوم بنجاح!');
+                closeAdminPanel();
+            } else {
+                alert('يرجى اختيار صورة أولاً من المعرض');
+            }
+        }
+
+        // إضافة الشكوى وعرضها للجميع
+        function submitComplaint(e) {
+            e.preventDefault();
+            const name = document.getElementById('parentName').value;
+            const phone = document.getElementById('parentPhone').value;
+            const msg = document.getElementById('parentMsg').value;
+
+            complaints.push({ name, phone, msg, reply: "" });
+            renderComplaints();
+            alert('تم إرسال الشكوى للإدارة بنجاح');
+            document.getElementById('complaintForm').reset();
+        }
+
+        // إظهار الشكاوى والردود
+        function renderComplaints() {
+            const adminList = document.getElementById('adminComplaintsList');
+            const publicList = document.getElementById('publicComplaintsList');
+
+            if(complaints.length === 0) return;
+
+            // قائمة الإدارة
+            adminList.innerHTML = complaints.map((c, i) => `
+                <div class="admin-complaint-box">
+                    <strong>${c.name} (${c.phone})</strong>
+                    <p style="margin:4px 0;">${c.msg}</p>
+                    ${c.reply ? `<p class="reply-text">رد الإدارة: ${c.reply}</p>` : `
+                        <input type="text" id="reply_${i}" placeholder="اكتب الرد هنا...">
+                        <button class="btn-primary" style="padding:6px; font-size:12px;" onclick="sendReply(${i})">إرسال الرد</button>
+                    `}
+                </div>
+            `).join('');
+
+            // قائمة العامة لأولياء الأمور والطلاب
+            publicList.innerHTML = complaints.map((c) => `
+                <div class="public-complaint-box">
+                    <strong>السائل: ${c.name}</strong>
+                    <p class="complaint-msg">الرسالة: ${c.msg}</p>
+                    <p class="reply-status ${c.reply ? 'replied' : ''}">
+                        ${c.reply ? `✔ رد الإدارة: ${c.reply}` : '⏳ بانتظار رد الإدارة...'}
+                    </p>
+                </div>
+            `).join('');
+        }
+
+        function sendReply(i) {
+            const replyText = document.getElementById(`reply_${i}`).value;
+            if(replyText) {
+                complaints[i].reply = replyText;
+                renderComplaints();
+                alert('تم إرسال الرد بنجاح ويمكن للجميع رؤيته الآن!');
+            }
+        }
+    </script>
+
+</body>
+</html>
