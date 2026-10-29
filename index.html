@@ -23,7 +23,7 @@
         <!-- قسم الرئيسية -->
         <section id="home" class="tab-content active">
             <div class="card main-card">
-                <h2>أهلاً بكم في البوابة المدرسية</h2>
+                <h2>🏠 أهلاً بكم في البوابة المدرسية</h2>
                 <p>مرحباً بأبنائنا الطلبة وأولياء الأمور الكرام. تابعوا التبليغات والجداول الدراسية أسبوعياً بكل سهولة.</p>
             </div>
             <div class="card secondary-card">
@@ -47,7 +47,7 @@
                 </div>
 
                 <div class="schedule-image-container">
-                    <img id="scheduleImg" src="https://via.placeholder.com/600x400/1e3a8a/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D8%A7%D9%84%D8%AD%D8%B5%D8%B5" alt="جدول الحصص">
+                    <img id="scheduleImg" src="" alt="جدول الحصص">
                 </div>
             </div>
         </section>
@@ -66,24 +66,15 @@
             </div>
         </section>
 
-        <!-- قسم الشكاوى والتواصل مع إمكانية رؤية الردود -->
+        <!-- قسم الشكاوى والتواصل -->
         <section id="contact" class="tab-content">
             <div class="card">
-                <h2>✉️ الشكاوى والمقترحات</h2>
+                <h2>✉️ الشكاوى والمقترحات (سرية للإدارة)</h2>
                 <form id="complaintForm" onsubmit="submitComplaint(event)">
                     <input type="text" id="parentName" placeholder="اسم ولي الأمر" required>
-                    <input type="tel" id="parentPhone" placeholder="رقم الهاتف" required>
-                    <textarea id="parentMsg" placeholder="اكتب الشكوى أو المقترح ليتم الرد عليها من الإدارة..." rows="3" required></textarea>
-                    <button type="submit" class="btn-primary">إرسال للإدارة</button>
+                    <textarea id="parentMsg" placeholder="اكتب شكواك أو مقترحك السري هنا..." rows="4" required></textarea>
+                    <button type="submit" class="btn-primary">إرسال للإدارة بشكل سري</button>
                 </form>
-            </div>
-
-            <!-- عرض الشكاوى والردود الصادرة من الإدارة -->
-            <div class="card">
-                <h2>💬 متابعة ردود الإدارة على الرسائل</h2>
-                <div id="publicComplaintsList">
-                    <p class="sub-text">لم يتم إرسال أي شكوى بعد.</p>
-                </div>
             </div>
         </section>
 
@@ -135,9 +126,9 @@
                     <button class="btn-primary" onclick="updateScheduleFromAdmin()">حفظ وتحديث جدول اليوم</button>
                 </div>
 
-                <!-- الرد على الشكاوى -->
+                <!-- الشكاوى الواردة للإدارة مع أدوات الحذف والتعديل -->
                 <div class="admin-section">
-                    <h3>3. الشكاوى الواردة والرد عليها</h3>
+                    <h3>3. الشكاوى والمقترحات الواردة</h3>
                     <div id="adminComplaintsList">
                         <p class="sub-text">لا توجد شكاوى جديدة حالياً.</p>
                     </div>
@@ -167,73 +158,20 @@
         </a>
     </nav>
 
-    <!-- سكريبت التشغيل وربط Firebase والواجهة -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, setDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-          apiKey: "AIzaSyB1BGfDwsNDex4EpHff14vWwPgJW-NPoWU",
-          authDomain: "al-hindiya-school.firebaseapp.com",
-          projectId: "al-hindiya-school",
-          storageBucket: "al-hindiya-school.firebasestorage.app",
-          messagingSenderId: "11072496241",
-          appId: "1:11072496241:web:1b825547939e249fb6f1d0",
-          measurementId: "G-XVF301KZNJ"
+    <!-- سكريبت التشغيل -->
+    <script>
+        let scheduleImages = JSON.parse(localStorage.getItem('school_schedules')) || {
+            sunday: "", monday: "", tuesday: "", wednesday: "", thursday: ""
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        let scheduleImages = {
-            sunday: "https://via.placeholder.com/600x400/1e3a8a/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%A3%D8%AD%D8%AF",
-            monday: "https://via.placeholder.com/600x400/1e40af/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%A5%D8%AB%D9%86%D9%8A%D9%86",
-            tuesday: "https://via.placeholder.com/600x400/3b82f6/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%AB%D9%84%D8%A7%D8%AB%D8%A7%D8%A1",
-            wednesday: "https://via.placeholder.com/600x400/4f46e5/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%A3%D8%B1%D8%A8%D8%B9%D8%A7%D8%A1",
-            thursday: "https://via.placeholder.com/600x400/312e81/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%AE%D9%85%D9%8A%D8%B3"
-        };
-
-        let complaints = [];
-        let newsList = [
+        let complaints = JSON.parse(localStorage.getItem('school_complaints')) || [];
+        let newsList = JSON.parse(localStorage.getItem('school_news')) || [
             { title: "بداية الدوام الرسمي", text: "نذكر أوليائنا الكرام بضرورة الالتزام بمواعيد الحضور الصباحي للطلاب.", img: "" }
         ];
 
         let tempNewsImage = "";
         let tempScheduleImage = "";
 
-        async function loadDataFromCloud() {
-            try {
-                const newsSnap = await getDocs(collection(db, "news"));
-                if (!newsSnap.empty) {
-                    newsList = newsSnap.docs.map(doc => doc.data());
-                    renderNewsFeed();
-                }
-
-                const schedSnap = await getDocs(collection(db, "schedules"));
-                schedSnap.forEach(docSnap => {
-                    const data = docSnap.data();
-                    if (docSnap.id && data.img) {
-                        scheduleImages[docSnap.id] = data.img;
-                    }
-                });
-                document.getElementById('scheduleImg').src = scheduleImages.sunday;
-
-                const compSnap = await getDocs(collection(db, "complaints"));
-                if (!compSnap.empty) {
-                    complaints = compSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    renderComplaints();
-                }
-            } catch (e) {
-                console.log("الوضع المحلي نشط");
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('scheduleImg').src = scheduleImages.sunday;
-            loadDataFromCloud();
-        });
-
-        // ربط الدوال بالنافذة العامة لضمان عمل الأزرار
         window.switchTab = function(tabId, event) {
             if(event) event.preventDefault();
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -245,21 +183,27 @@
         window.showDaySchedule = function(day, btn) {
             document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            document.getElementById('scheduleImg').src = scheduleImages[day];
+            document.getElementById('scheduleImg').src = scheduleImages[day] || '';
         };
 
         let clickCount = 0;
         let clickTimer = null;
 
-        document.getElementById('secretAdminTitle').addEventListener('click', function() {
-            clickCount++;
-            if(clickCount === 1) {
-                clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
-            } else if(clickCount === 3) {
-                clearTimeout(clickTimer);
-                clickCount = 0;
-                document.getElementById('passwordModal').style.display = 'block';
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('scheduleImg').src = scheduleImages.sunday || '';
+            renderNewsFeed();
+            renderComplaints();
+
+            document.getElementById('secretAdminTitle').addEventListener('click', function() {
+                clickCount++;
+                if(clickCount === 1) {
+                    clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
+                } else if(clickCount === 3) {
+                    clearTimeout(clickTimer);
+                    clickCount = 0;
+                    document.getElementById('passwordModal').style.display = 'block';
+                }
+            });
         });
 
         window.closePasswordModal = function() {
@@ -272,6 +216,7 @@
             if(pass === "2027") {
                 window.closePasswordModal();
                 document.getElementById('adminModal').style.display = 'block';
+                renderComplaints();
             } else {
                 alert("رمز الدخول غير صحيح!");
             }
@@ -320,7 +265,7 @@
             `).join('');
         }
 
-        window.addNewsFromAdmin = async function() {
+        window.addNewsFromAdmin = function() {
             const title = document.getElementById('adminNewsTitle').value;
             const text = document.getElementById('adminNewsText').value;
 
@@ -328,11 +273,8 @@
 
             const newNews = { title, text, img: tempNewsImage };
             newsList.unshift(newNews);
+            localStorage.setItem('school_news', JSON.stringify(newsList));
             renderNewsFeed();
-
-            try {
-                await addDoc(collection(db, "news"), newNews);
-            } catch(e) {}
 
             alert('تم نشر التبليغ بنجاح!');
             document.getElementById('adminNewsTitle').value = '';
@@ -342,15 +284,12 @@
             window.closeAdminPanel();
         };
 
-        window.updateScheduleFromAdmin = async function() {
+        window.updateScheduleFromAdmin = function() {
             const day = document.getElementById('adminSelectDay').value;
             if(tempScheduleImage) {
                 scheduleImages[day] = tempScheduleImage;
                 document.getElementById('scheduleImg').src = tempScheduleImage;
-
-                try {
-                    await setDoc(doc(db, "schedules", day), { day: day, img: tempScheduleImage });
-                } catch(e) {}
+                localStorage.setItem('school_schedules', JSON.stringify(scheduleImages));
 
                 alert('تم تحديث جدول اليوم وحفظه بشكل دائم بنجاح!');
                 tempScheduleImage = "";
@@ -361,71 +300,96 @@
             }
         };
 
-        window.submitComplaint = async function(e) {
+        window.submitComplaint = function(e) {
             if(e) e.preventDefault();
             const name = document.getElementById('parentName').value;
-            const phone = document.getElementById('parentPhone').value;
             const msg = document.getElementById('parentMsg').value;
 
-            const newComp = { name, phone, msg, reply: "" };
-            
-            try {
-                const docRef = await addDoc(collection(db, "complaints"), newComp);
-                newComp.id = docRef.id;
-            } catch(e) {}
+            if(!name || !msg) {
+                alert('يرجى ملء جميع الحقول');
+                return;
+            }
 
+            const newComp = { name, msg, reply: "", id: 'local_' + Date.now() };
             complaints.push(newComp);
+            localStorage.setItem('school_complaints', JSON.stringify(complaints));
             renderComplaints();
-            alert('تم إرسال الشكوى للإدارة بنجاح');
+            alert('تم إرسال شكواك أو مقترحك للإدارة بنجاح.');
             document.getElementById('complaintForm').reset();
         };
 
         function renderComplaints() {
             const adminList = document.getElementById('adminComplaintsList');
-            const publicList = document.getElementById('publicComplaintsList');
+            if(!adminList) return;
 
             if(complaints.length === 0) {
                 adminList.innerHTML = `<p class="sub-text">لا توجد شكاوى جديدة حالياً.</p>`;
-                publicList.innerHTML = `<p class="sub-text">لم يتم إرسال أي شكوى بعد.</p>`;
                 return;
             }
 
             adminList.innerHTML = complaints.map((c, i) => `
-                <div class="admin-complaint-box" style="border: 1px solid #ddd; padding: 10px; margin-bottom: 8px; border-radius: 6px;">
-                    <strong>${c.name} (${c.phone})</strong>
-                    <p style="margin:4px 0;">${c.msg}</p>
-                    ${c.reply ? `<p class="reply-text" style="color: green;">رد الإدارة: ${c.reply}</p>` : `
-                        <input type="text" id="reply_${i}" placeholder="اكتب الرد هنا..." style="width:100%; margin-bottom:5px; padding:5px;">
-                        <button class="btn-primary" style="padding:6px; font-size:12px;" onclick="sendReply('${c.id}', ${i})">إرسال الرد</button>
+                <div class="admin-complaint-box" style="position: relative;">
+                    <strong>ولي الأمر: ${c.name}</strong>
+                    <p style="margin:6px 0;">الرسالة: ${c.msg}</p>
+                    
+                    ${c.reply ? `
+                        <div style="background: rgba(56, 189, 248, 0.1); padding: 8px; border-radius: 8px; margin: 8px 0;">
+                            <p style="color: #38bdf8; font-weight: bold; margin: 0 0 6px 0;">الرد: ${c.reply}</p>
+                            <input type="text" id="edit_reply_${i}" value="${c.reply}" style="width:100%; margin-bottom:6px; padding:6px; font-size:12px;">
+                            <button class="btn-primary" style="padding:6px 12px; font-size:11px; margin-top:0; width:auto; display:inline-block;" onclick="updateReply(${i})">تعديل الرد</button>
+                            <button style="background:#ef4444; color:white; border:none; padding:6px 12px; border-radius:8px; font-size:11px; cursor:pointer; margin-right:6px;" onclick="deleteReply(${i})">حذف الرد</button>
+                        </div>
+                    ` : `
+                        <input type="text" id="reply_${i}" placeholder="اكتب الرد هنا..." style="width:100%; margin:8px 0; padding:8px;">
+                        <button class="btn-primary" style="padding:8px; font-size:12px; margin-top:0;" onclick="sendReply(${i})">إرسال الرد</button>
                     `}
-                </div>
-            `).join('');
 
-            publicList.innerHTML = complaints.map((c) => `
-                <div class="public-complaint-box" style="border: 1px solid #eee; padding: 10px; margin-bottom: 8px; border-radius: 6px;">
-                    <strong>السائل: ${c.name}</strong>
-                    <p class="complaint-msg" style="margin:4px 0;">الرسالة: ${c.msg}</p>
-                    <p class="reply-status ${c.reply ? 'replied' : ''}" style="font-weight: bold; color: ${c.reply ? 'green' : '#d97706'};">
-                        ${c.reply ? `✔ رد الإدارة: ${c.reply}` : '⏳ بانتظار رد الإدارة...'}
-                    </p>
+                    <button style="background: transparent; color: #f43f5e; border: 1px solid #f43f5e; padding: 4px 10px; border-radius: 8px; font-size: 11px; cursor: pointer; margin-top: 10px;" onclick="deleteComplaint(${i})">🗑️ حذف الشكوى بالكامل</button>
                 </div>
             `).join('');
         }
 
-        window.sendReply = async function(complaintId, i) {
-            const replyText = document.getElementById(`reply_${i}`).value;
+        window.sendReply = function(i) {
+            const replyInput = document.getElementById(`reply_${i}`);
+            const replyText = replyInput ? replyInput.value : '';
             if(replyText) {
                 complaints[i].reply = replyText;
-                
-                try {
-                    const compRef = doc(db, "complaints", complaintId);
-                    await updateDoc(compRef, { reply: replyText });
-                } catch(e) {}
-
+                localStorage.setItem('school_complaints', JSON.stringify(complaints));
                 renderComplaints();
-                alert('تم إرسال الرد بنجاح ويمكن للجميع رؤيته الآن!');
+                alert('تم إرسال الرد بنجاح!');
             } else {
                 alert('يرجى كتابة نص الرد أولاً.');
+            }
+        };
+
+        window.updateReply = function(i) {
+            const editInput = document.getElementById(`edit_reply_${i}`);
+            const newText = editInput ? editInput.value : '';
+            if(newText) {
+                complaints[i].reply = newText;
+                localStorage.setItem('school_complaints', JSON.stringify(complaints));
+                renderComplaints();
+                alert('تم تحديث الرد بنجاح!');
+            } else {
+                alert('نص الرد لا يمكن أن يكون فارغاً.');
+            }
+        };
+
+        window.deleteReply = function(i) {
+            if(confirm('هل أنت متأكد من حذف هذا الرد؟')) {
+                complaints[i].reply = "";
+                localStorage.setItem('school_complaints', JSON.stringify(complaints));
+                renderComplaints();
+                alert('تم حذف الرد بنجاح.');
+            }
+        };
+
+        window.deleteComplaint = function(i) {
+            if(confirm('هل أنت متأكد من حذف هذه الشكوى نهائياً؟')) {
+                complaints.splice(i, 1);
+                localStorage.setItem('school_complaints', JSON.stringify(complaints));
+                renderComplaints();
+                alert('تم حذف الشكوى بنجاح.');
             }
         };
     </script>
