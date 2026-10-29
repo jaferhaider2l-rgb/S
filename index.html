@@ -66,19 +66,31 @@
             </div>
         </section>
 
-        <!-- قسم الشكاوى والتواصل -->
+        <!-- قسم الشكاوى والتواصل مع الرمز السري -->
         <section id="contact" class="tab-content">
             <div class="card">
-                <h2>✉️ الشكاوى والمقترحات (سرية للإدارة)</h2>
+                <h2>✉️ الشكاوى والمقترحات السرية</h2>
                 <form id="complaintForm" onsubmit="submitComplaint(event)">
                     <input type="text" id="parentName" placeholder="اسم ولي الأمر" required>
-                    <textarea id="parentMsg" placeholder="اكتب شكواك أو مقترحك السري هنا..." rows="4" required></textarea>
+                    <textarea id="parentMsg" placeholder="اكتب شكواك أو مقترحك السري هنا..." rows="3" required></textarea>
+                    <input type="password" id="parentSecretPin" placeholder="اختر رمزاً سرياً خاصاً بك (احفظه جيداً لمتابعة الرد)" required>
                     <button type="submit" class="btn-primary">إرسال للإدارة بشكل سري</button>
                 </form>
             </div>
+
+            <div class="card">
+                <h2>🔐 متابعة الشكوى بالرمز السري</h2>
+                <p class="sub-text">أدخل الرمز السري الذي اخترته عند إرسال الشكوى للاطلاع على رد الإدارة:</p>
+                <input type="password" id="checkPinInput" placeholder="أدخل الرمز السري الخاص بك...">
+                <button class="btn-primary" onclick="checkMyComplaint()">عرض الشكوى والرد</button>
+                
+                <div id="myComplaintResult" style="margin-top: 15px;">
+                    <p class="sub-text">لم يتم إدخال الرمز السري بعد.</p>
+                </div>
+            </div>
         </section>
 
-        <!-- نافذة كلمة المرور المنبثقة -->
+        <!-- نافذة كلمة المرور المنبثقة للإدارة -->
         <div id="passwordModal" class="modal">
             <div class="modal-content custom-dialog">
                 <span class="close-btn" onclick="closePasswordModal()">&times;</span>
@@ -126,7 +138,7 @@
                     <button class="btn-primary" onclick="updateScheduleFromAdmin()">حفظ وتحديث جدول اليوم</button>
                 </div>
 
-                <!-- الشكاوى الواردة للإدارة مع أدوات الحذف والتعديل -->
+                <!-- الشكاوى الواردة للإدارة مع أدوات التعديل والحذف -->
                 <div class="admin-section">
                     <h3>3. الشكاوى والمقترحات الواردة</h3>
                     <div id="adminComplaintsList">
@@ -304,17 +316,18 @@
             if(e) e.preventDefault();
             const name = document.getElementById('parentName').value;
             const msg = document.getElementById('parentMsg').value;
+            const secretPin = document.getElementById('parentSecretPin').value;
 
-            if(!name || !msg) {
-                alert('يرجى ملء جميع الحقول');
+            if(!name || !msg || !secretPin) {
+                alert('يرجى ملء جميع الحقول مع إدخال الرمز السري');
                 return;
             }
 
-            const newComp = { name, msg, reply: "", id: 'local_' + Date.now() };
+            const newComp = { name, msg, secretPin, reply: "", id: 'local_' + Date.now() };
             complaints.push(newComp);
             localStorage.setItem('school_complaints', JSON.stringify(complaints));
             renderComplaints();
-            alert('تم إرسال شكواك أو مقترحك للإدارة بنجاح.');
+            alert('تم إرسال شكواك بنجاح! ⚠️ تذكير: يرجى حفظ الرمز السري الخاص بك لكي تتمكن من متابعة رد الإدارة لاحقاً.');
             document.getElementById('complaintForm').reset();
         };
 
@@ -329,7 +342,7 @@
 
             adminList.innerHTML = complaints.map((c, i) => `
                 <div class="admin-complaint-box" style="position: relative;">
-                    <strong>ولي الأمر: ${c.name}</strong>
+                    <strong>ولي الأمر: ${c.name}</strong> <span style="font-size:11px; color:#38bdf8;">(الرمز السري: ${c.secretPin})</span>
                     <p style="margin:6px 0;">الرسالة: ${c.msg}</p>
                     
                     ${c.reply ? `
@@ -392,7 +405,24 @@
                 alert('تم حذف الشكوى بنجاح.');
             }
         };
-    </script>
 
-</body>
-</html>
+        window.checkMyComplaint = function() {
+            const pin = document.getElementById('checkPinInput').value.trim();
+            const resultDiv = document.getElementById('myComplaintResult');
+
+            if(!pin) {
+                alert('يرجى إدخال الرمز السري للبحث');
+                return;
+            }
+
+            const found = complaints.filter(c => c.secretPin === pin);
+
+            if(found.length === 0) {
+                resultDiv.innerHTML = `<p class="sub-text" style="color: #f43f5e;">❌ الرمز السري غير صحيح أو لا توجد شكوى مسجلة بهذا الرمز.</p>`;
+                return;
+            }
+
+            resultDiv.innerHTML = found.map(c => `
+                <div class="admin-complaint-box" style="border-color: #38bdf8; margin-top: 10px;">
+                    <strong>المرسل: ${c.name}</strong>
+                    <p styl
