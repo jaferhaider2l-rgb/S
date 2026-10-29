@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بوابة مدرسة الهندية الابتدائية للبنين</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="abbas.png">
 </head>
 <body id="pageBody">
 
@@ -168,7 +168,32 @@
     </nav>
 
     <script>
-        const scheduleImages = {
+        // طلب إذن الإشعارات عند فتح التطبيق أول مرة
+        if ("Notification" in window && Notification.permission !== "granted") {
+            Notification.requestPermission();
+        }
+
+        // دالة إرسال الإشعارات الفورية
+        function sendAppNotification(title, bodyText) {
+            if ("Notification" in window && Notification.permission === "granted") {
+                if (navigator.serviceWorker) {
+                    navigator.serviceWorker.ready.then(registration => {
+                        registration.showNotification(title, {
+                            body: bodyText,
+                            icon: 'abbas.png',
+                            badge: 'abbas.png'
+                        });
+                    }).catch(() => {
+                        new Notification(title, { body: bodyText, icon: 'abbas.png' });
+                    });
+                } else {
+                    new Notification(title, { body: bodyText, icon: 'abbas.png' });
+                }
+            }
+        }
+
+        // استرجاع البيانات المحفوظة محلياً أو استخدام القيم الافتراضية
+        let scheduleImages = JSON.parse(localStorage.getItem('hindiyah_schedules')) || {
             sunday: "https://via.placeholder.com/600x400/1e3a8a/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%A3%D8%AD%D8%AF",
             monday: "https://via.placeholder.com/600x400/1e40af/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%A5%D8%AB%D9%86%D9%8A%D9%86",
             tuesday: "https://via.placeholder.com/600x400/3b82f6/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%AB%D9%84%D8%A7%D8%AB%D8%A7%D8%A1",
@@ -176,9 +201,20 @@
             thursday: "https://via.placeholder.com/600x400/312e81/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%AE%D9%85%D9%8A%D8%B3"
         };
 
-        let complaints = [];
+        let complaints = JSON.parse(localStorage.getItem('hindiyah_complaints')) || [];
+        let newsList = JSON.parse(localStorage.getItem('hindiyah_news')) || [
+            { title: "بداية الدوام الرسمي", text: "نذكر أوليائنا الكرام بضرورة الالتزام بمواعيد الحضور الصباحي للطلاب.", img: "" }
+        ];
+
         let tempNewsImage = "";
         let tempScheduleImage = "";
+
+        // تحميل البيانات وعرضها عند فتح الصفحة
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('scheduleImg').src = scheduleImages.sunday;
+            renderNewsFeed();
+            renderComplaints();
+        });
 
         function switchTab(tabId, event) {
             event.preventDefault();
@@ -255,23 +291,35 @@
             }
         }
 
+        function renderNewsFeed() {
+            const newsContainer = document.getElementById('newsFeed');
+            newsContainer.innerHTML = newsList.map(n => `
+                <div class="news-card">
+                    <span class="news-badge">عاجل</span>
+                    <h3>${n.title}</h3>
+                    <p>${n.text}</p>
+                    ${n.img ? `<img src="${n.img}" class="news-img" alt="صورة">` : ''}
+                </div>
+            `).join('');
+        }
+
         function addNewsFromAdmin() {
             const title = document.getElementById('adminNewsTitle').value;
             const text = document.getElementById('adminNewsText').value;
 
             if(!title || !text) { alert('يرجى كتابة العنوان والنص'); return; }
 
-            const newsContainer = document.getElementById('newsFeed');
-            const newCard = document.createElement('div');
-            newCard.className = 'news-card';
-            newCard.innerHTML = `
-                <span class="news-badge">عاجل</span>
-                <h3>${title}</h3>
-                <p>${text}</p>
-                ${tempNewsImage ? `<img src="${tempNewsImage}" class="news-img" alt="صورة">` : ''}
-            `;
-            newsContainer.prepend(newCard);
+            newsList.unshift({ title, text, img: tempNewsImage });
+            localStorage.setItem('hindiyah_news', JSON.stringify(newsList));
+            
+            renderNewsFeed();
+            sendAppNotification("تبليغ جديد من مدرسة الهندية", title);
+
             alert('تم نشر التبليغ بنجاح!');
+            document.getElementById('adminNewsTitle').value = '';
+            document.getElementById('adminNewsText').value = '';
+            tempNewsImage = "";
+            document.getElementById('newsFileName').innerText = "لم يتم اختيار صورة";
             closeAdminPanel();
         }
 
@@ -279,15 +327,21 @@
             const day = document.getElementById('adminSelectDay').value;
             if(tempScheduleImage) {
                 scheduleImages[day] = tempScheduleImage;
+                localStorage.setItem('hindiyah_schedules', JSON.stringify(scheduleImages));
+                
                 document.getElementById('scheduleImg').src = tempScheduleImage;
-                alert('تم تحديث جدول اليوم بنجاح!');
+                sendAppNotification("تحديث جدول الحصص", `تم إجراء تعديل وتحديث على جدول يوم ${day}`);
+
+                alert('تم تحديث جدول اليوم وحفظه بنجاح!');
+                tempScheduleImage = "";
+                document.getElementById('scheduleFileName').innerText = "لم يتم اختيار صورة";
                 closeAdminPanel();
             } else {
                 alert('يرجى اختيار صورة أولاً من المعرض');
             }
         }
 
-        // إضافة الشكوى وعرضها للجميع
+        // إضافة الشكوى وحفظها محلياً
         function submitComplaint(e) {
             e.preventDefault();
             const name = document.getElementById('parentName').value;
@@ -295,6 +349,8 @@
             const msg = document.getElementById('parentMsg').value;
 
             complaints.push({ name, phone, msg, reply: "" });
+            localStorage.setItem('hindiyah_complaints', JSON.stringify(complaints));
+
             renderComplaints();
             alert('تم إرسال الشكوى للإدارة بنجاح');
             document.getElementById('complaintForm').reset();
@@ -305,15 +361,19 @@
             const adminList = document.getElementById('adminComplaintsList');
             const publicList = document.getElementById('publicComplaintsList');
 
-            if(complaints.length === 0) return;
+            if(complaints.length === 0) {
+                adminList.innerHTML = `<p class="sub-text">لا توجد شكاوى جديدة حالياً.</p>`;
+                publicList.innerHTML = `<p class="sub-text">لم يتم إرسال أي شكوى بعد.</p>`;
+                return;
+            }
 
             // قائمة الإدارة
             adminList.innerHTML = complaints.map((c, i) => `
-                <div class="admin-complaint-box">
+                <div class="admin-complaint-box" style="border: 1px solid #ddd; padding: 10px; margin-bottom: 8px; border-radius: 6px;">
                     <strong>${c.name} (${c.phone})</strong>
                     <p style="margin:4px 0;">${c.msg}</p>
-                    ${c.reply ? `<p class="reply-text">رد الإدارة: ${c.reply}</p>` : `
-                        <input type="text" id="reply_${i}" placeholder="اكتب الرد هنا...">
+                    ${c.reply ? `<p class="reply-text" style="color: green;">رد الإدارة: ${c.reply}</p>` : `
+                        <input type="text" id="reply_${i}" placeholder="اكتب الرد هنا..." style="width:100%; margin-bottom:5px; padding:5px;">
                         <button class="btn-primary" style="padding:6px; font-size:12px;" onclick="sendReply(${i})">إرسال الرد</button>
                     `}
                 </div>
@@ -321,10 +381,10 @@
 
             // قائمة العامة لأولياء الأمور والطلاب
             publicList.innerHTML = complaints.map((c) => `
-                <div class="public-complaint-box">
+                <div class="public-complaint-box" style="border: 1px solid #eee; padding: 10px; margin-bottom: 8px; border-radius: 6px;">
                     <strong>السائل: ${c.name}</strong>
-                    <p class="complaint-msg">الرسالة: ${c.msg}</p>
-                    <p class="reply-status ${c.reply ? 'replied' : ''}">
+                    <p class="complaint-msg" style="margin:4px 0;">الرسالة: ${c.msg}</p>
+                    <p class="reply-status ${c.reply ? 'replied' : ''}" style="font-weight: bold; color: ${c.reply ? 'green' : '#d97706'};">
                         ${c.reply ? `✔ رد الإدارة: ${c.reply}` : '⏳ بانتظار رد الإدارة...'}
                     </p>
                 </div>
@@ -335,8 +395,13 @@
             const replyText = document.getElementById(`reply_${i}`).value;
             if(replyText) {
                 complaints[i].reply = replyText;
+                localStorage.setItem('hindiyah_complaints', JSON.stringify(complaints));
                 renderComplaints();
+                sendAppNotification("رد جديد من الإدارة", "تم الرد على استفسارك أو شكواك المقدمة للإدارة.");
+
                 alert('تم إرسال الرد بنجاح ويمكن للجميع رؤيته الآن!');
+            } else {
+                alert('يرجى كتابة نص الرد أولاً.');
             }
         }
     </script>
