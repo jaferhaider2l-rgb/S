@@ -99,7 +99,7 @@ body.dark-mode {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- البطاقات الزجاجية المضيئة (Glassmorphism + Neon Glow) --- */
+/* --- البطاقات الزجاجية المضيئة --- */
 .card {
     background: var(--card-bg);
     backdrop-filter: blur(20px);
@@ -251,7 +251,7 @@ input:focus, textarea:focus, select:focus {
     text-align: center;
 }
 
-/* --- النوافذ المنبثقة (Modals) الساحرة --- */
+/* --- النوافذ المنبثقة (Modals) --- */
 .modal {
     display: none;
     position: fixed;
@@ -263,12 +263,6 @@ input:focus, textarea:focus, select:focus {
     background-color: rgba(3, 7, 18, 0.85);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    animation: fadeInModal 0.3s ease;
-}
-
-@keyframes fadeInModal {
-    from { opacity: 0; }
-    to { opacity: 1; }
 }
 
 .modal-content {
@@ -282,6 +276,8 @@ input:focus, textarea:focus, select:focus {
     position: relative;
     color: white;
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(2, 132, 199, 0.15);
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .close-btn {
@@ -313,7 +309,7 @@ input:focus, textarea:focus, select:focus {
     margin-bottom: 12px;
 }
 
-/* --- شريط التنقل السفلي الفاخر (Floating Glass Nav) --- */
+/* --- شريط التنقل السفلي الفاخر --- */
 .bottom-nav {
     position: fixed;
     bottom: 20px;
@@ -366,7 +362,7 @@ input:focus, textarea:focus, select:focus {
     font-weight: 700;
 }
 
-/* --- بطاقات التبليغات والشكاوى العصرية --- */
+/* --- بطاقات التبليغات والشكاوى --- */
 .news-card {
     background: rgba(15, 23, 42, 0.6);
     padding: 18px;
@@ -374,12 +370,6 @@ input:focus, textarea:focus, select:focus {
     margin-bottom: 14px;
     border: 1px solid var(--border-color);
     border-right: 4px solid #38bdf8;
-    transition: transform 0.2s ease;
-}
-
-.news-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(56, 189, 248, 0.4);
 }
 
 .news-badge {
@@ -389,7 +379,6 @@ input:focus, textarea:focus, select:focus {
     padding: 3px 9px;
     border-radius: 6px;
     font-weight: 700;
-    box-shadow: 0 2px 8px rgba(244, 63, 94, 0.4);
 }
 
 .admin-complaint-box, .public-complaint-box {
@@ -398,4 +387,4 @@ input:focus, textarea:focus, select:focus {
     padding: 16px;
     margin-bottom: 12px;
     border-radius: 16px;
-    }
+}
