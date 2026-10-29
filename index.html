@@ -173,7 +173,7 @@
                     <textarea id="adminNewsText" placeholder="نص التبليغ..."></textarea>
                     <label class="file-upload-label">
                         🖼️ اختر صورة التبليغ من المعرض:
-                        <input type="file" id="adminNewsImgFile" accept="image/*" style="display:none;" onchange="previewNewsImage(event)">
+                        <input type="file" id="adminNewsImgFile" accept="image/*" capture="environment" style="display:none;" onchange="previewNewsImage(event)">
                     </label>
                     <span id="newsFileName" class="file-name">لم يتم اختيار صورة</span>
                     <button class="btn-primary" onclick="addNewsFromAdmin()">نشر التبليغ</button>
@@ -191,7 +191,7 @@
                     </select>
                     <label class="file-upload-label">
                         🖼️ اختر صورة الجدول الجديدة من المعرض:
-                        <input type="file" id="adminScheduleImgFile" accept="image/*" style="display:none;" onchange="previewScheduleImage(event)">
+                        <input type="file" id="adminScheduleImgFile" accept="image/*" capture="environment" style="display:none;" onchange="previewScheduleImage(event)">
                     </label>
                     <span id="scheduleFileName" class="file-name">لم يتم اختيار صورة</span>
                     <button class="btn-primary" onclick="updateScheduleFromAdmin()">حفظ وتحديث جدول اليوم</button>
@@ -300,12 +300,13 @@
             loadDataFromCloud();
         });
 
+        // تصدير جميع الدوال للنطاق العام لتتمكن أحداث HTML من الوصول إليها مباشرة
         window.switchTab = function(tabId, event) {
-            event.preventDefault();
+            if(event) event.preventDefault();
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+            if(event) event.currentTarget.classList.add('active');
         };
 
         window.showDaySchedule = function(day, btn) {
@@ -315,7 +316,7 @@
         };
 
         window.openExitModal = function(event) {
-            event.preventDefault();
+            if(event) event.preventDefault();
             document.getElementById('exitModal').style.display = 'block';
         };
 
@@ -442,7 +443,7 @@
         };
 
         window.submitComplaint = async function(e) {
-            e.preventDefault();
+            if(e) e.preventDefault();
             const name = document.getElementById('parentName').value;
             const phone = document.getElementById('parentPhone').value;
             const msg = document.getElementById('parentMsg').value;
@@ -457,8 +458,4 @@
             complaints.push(newComp);
             renderComplaints();
             alert('تم إرسال الشكوى للإدارة بنجاح');
-            document.getElementById('complaintForm').reset();
-        };
-
-        function renderComplaints() {
-            const adminList = document.getElementById('adminComplaintsList')
+            document.getE
