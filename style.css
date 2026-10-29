@@ -1,45 +1,20 @@
-:root {
-    --primary-color: #1e3a8a;
-    --accent-color: #3b82f6;  
-    --indigo-color: #4f46e5;  
-    --bg-color: #f1f5f9;      
-    --card-bg: #ffffff;
-    --text-color: #0f172a;
-    --sub-text-color: #64748b;
-    --nav-bg: #ffffff;
-}
-
+/* تنسيقات عامة للوضع الداكن (Dark Mode) */
 body.dark-mode {
-    --primary-color: #3b82f6;
-    --indigo-color: #6366f1;
-    --bg-color: #0f172a;
-    --card-bg: #1e293b;
-    --text-color: #f8fafc;
-    --sub-text-color: #94a3b8;
-    --nav-bg: #1e293b;
-}
-
-body {
-    font-family: system-ui, -apple-system, sans-serif;
+    background-color: #0f172a;
+    color: #f8fafc;
+    font-family: 'Cairo', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: var(--bg-color);
-    color: var(--text-color);
     direction: rtl;
-    text-align: right;
-    padding-bottom: 75px;
-    transition: background-color 0.3s, color 0.3s;
 }
 
 .hero-header {
-    background: linear-gradient(135deg, #1e3a8a 0%, #4f46e5 100%);
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
     color: white;
-    padding: 24px 15px;
+    padding: 20px;
     text-align: center;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
     position: relative;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
 .theme-btn {
@@ -48,33 +23,17 @@ body {
     left: 15px;
     background: rgba(255, 255, 255, 0.2);
     border: none;
+    padding: 8px 12px;
     border-radius: 50%;
-    width: 35px;
-    height: 35px;
     cursor: pointer;
     font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.hero-header h1 {
-    font-size: 19px;
-    margin: 0 0 5px 0;
-    cursor: pointer;
-    user-select: none;
-}
-
-.hero-header p {
-    font-size: 12px;
-    margin: 0;
-    opacity: 0.85;
 }
 
 .container {
+    max-width: 800px;
+    margin: 20px auto;
     padding: 15px;
-    max-width: 500px;
-    margin: auto;
+    padding-bottom: 80px;
 }
 
 .tab-content {
@@ -86,247 +45,199 @@ body {
 }
 
 .card {
-    background: var(--card-bg);
-    color: var(--text-color);
-    margin-bottom: 15px;
-    padding: 18px;
-    border-radius: 14px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    border-top: 4px solid var(--indigo-color);
-    transition: background-color 0.3s, color 0.3s;
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
-
-.main-card { border-top-color: var(--primary-color); }
-.secondary-card { border-top-color: var(--accent-color); }
 
 .card h2 {
-    font-size: 16px;
-    color: var(--primary-color);
+    color: #60a5fa;
     margin-top: 0;
-    margin-bottom: 10px;
-}
-
-.sub-text {
-    font-size: 12px;
-    color: var(--sub-text-color);
+    font-size: 18px;
 }
 
 .days-selector {
     display: flex;
-    gap: 6px;
-    overflow-x: auto;
-    padding-bottom: 8px;
-    margin-bottom: 12px;
+    gap: 8px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
 }
 
 .day-btn {
-    background: var(--bg-color);
-    border: 1px solid var(--sub-text-color);
-    padding: 8px 14px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: bold;
-    color: var(--text-color);
-    white-space: nowrap;
+    background: #334155;
+    color: #cbd5e1;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
     cursor: pointer;
-}
-
-.day-btn.active {
-    background: var(--primary-color);
-    color: white;
-    border-color: transparent;
-}
-
-.schedule-image-container img {
-    width: 100%;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.news-card {
-    border: 1px solid var(--sub-text-color);
-    border-radius: 10px;
-    padding: 12px;
-    margin-bottom: 12px;
-    background: var(--card-bg);
-}
-
-.news-badge {
-    background: var(--primary-color);
-    color: white;
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 8px;
     font-weight: bold;
+    transition: 0.2s;
 }
 
-.news-img {
+.day-btn.active, .day-btn:hover {
+    background: #3b82f6;
+    color: white;
+}
+
+.schedule-image-container img, .news-img {
     width: 100%;
+    max-height: 400px;
+    object-fit: cover;
     border-radius: 8px;
-    margin-top: 8px;
+    margin-top: 10px;
 }
 
-/* تنسيق بطاقات الشكاوى للعامة */
-.public-complaint-box {
-    border: 1px solid var(--sub-text-color);
+.btn-primary {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 10px;
+    transition: 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #2563eb;
+}
+
+input[type="text"], input[type="tel"], input[type="password"], textarea, select {
+    width: 100%;
     padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    background: var(--bg-color);
-}
-
-.complaint-msg {
-    font-size: 13px;
-    margin: 4px 0;
-}
-
-.reply-status {
-    font-size: 12px;
-    font-weight: bold;
-    color: #eab308;
-    margin: 4px 0 0 0;
-}
-
-.reply-status.replied {
-    color: #22c55e;
+    margin-bottom: 12px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: white;
+    border-radius: 8px;
+    box-sizing: border-box;
 }
 
 .file-upload-label {
     display: block;
-    background: rgba(79, 70, 229, 0.1);
-    color: var(--indigo-color);
-    padding: 12px;
+    background: #334155;
+    color: #f8fafc;
+    padding: 10px;
     text-align: center;
     border-radius: 8px;
-    font-size: 13px;
-    font-weight: bold;
     cursor: pointer;
-    margin: 6px 0;
-    border: 1px dashed var(--indigo-color);
+    margin-bottom: 5px;
+    font-size: 14px;
 }
 
 .file-name {
+    font-size: 12px;
+    color: #94a3b8;
     display: block;
-    font-size: 11px;
-    color: var(--sub-text-color);
-    margin-bottom: 8px;
-    text-align: center;
+    margin-bottom: 10px;
 }
 
-input, textarea, select {
+/* Modal Windows */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
     width: 100%;
-    box-sizing: border-box;
-    margin: 6px 0;
-    padding: 11px;
-    border: 1px solid var(--sub-text-color);
-    border-radius: 8px;
-    font-size: 14px;
-    background: var(--card-bg);
-    color: var(--text-color);
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
 }
 
-.btn-primary {
-    background: var(--primary-color);
+.modal-content {
+    background-color: #1e293b;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #334155;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 12px;
+    position: relative;
     color: white;
-    border: none;
-    padding: 11px;
-    width: 100%;
-    border-radius: 8px;
+}
+
+.close-btn {
+    color: #aaa;
+    float: left;
+    font-size: 28px;
     font-weight: bold;
     cursor: pointer;
-    margin-top: 6px;
 }
 
+.close-btn:hover {
+    color: white;
+}
+
+.admin-section {
+    background: #0f172a;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #1e293b;
+}
+
+.admin-section h3 {
+    font-size: 15px;
+    color: #60a5fa;
+    margin-top: 0;
+}
+
+/* Bottom Navigation Bar */
 .bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    background: var(--nav-bg);
+    background: #1e293b;
     display: flex;
     justify-content: space-around;
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
-    box-shadow: 0 -4px 15px rgba(0,0,0,0.06);
-    z-index: 1000;
-    height: 62px;
-    border-top: 2px solid rgba(100,100,100,0.1);
-    transition: background-color 0.3s;
+    padding: 10px 0;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.3);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    z-index: 500;
 }
 
 .nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     text-decoration: none;
-    color: var(--sub-text-color);
-    flex-grow: 1;
+    color: #94a3b8;
+    text-align: center;
+    flex: 1;
+    transition: 0.2s;
 }
 
-.nav-icon { font-size: 19px; }
+.nav-item.active, .nav-item:hover {
+    color: #3b82f6;
+}
+
+.nav-icon {
+    font-size: 20px;
+    display: block;
+}
 
 .nav-item small {
     font-size: 11px;
+    display: block;
     margin-top: 2px;
 }
 
-.nav-item.active {
-    color: var(--primary-color);
-    font-weight: bold;
-}
-
-/* تصميم النافذة المنبثقة العصرية لكلمة المرور */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 2000;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(15, 23, 42, 0.7);
-    overflow: auto;
-}
-
-.modal-content {
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    margin: 15% auto;
-    padding: 20px;
-    border-radius: 16px;
-    width: 85%;
-    max-width: 400px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-
-.custom-dialog h3 {
-    margin-top: 0;
-    color: var(--primary-color);
-}
-
-.close-btn {
-    float: left;
-    font-size: 22px;
-    font-weight: bold;
-    cursor: pointer;
-    color: var(--sub-text-color);
-}
-
-.admin-section {
-    border-bottom: 1px dashed var(--sub-text-color);
-    padding-bottom: 12px;
-    margin-bottom: 12px;
-}
-
-.admin-complaint-box {
-    background: var(--bg-color);
-    padding: 10px;
-    margin-bottom: 8px;
+.news-card {
+    background: #0f172a;
+    padding: 12px;
     border-radius: 8px;
-    border: 1px solid var(--sub-text-color);
+    margin-bottom: 10px;
+    border-right: 4px solid #3b82f6;
 }
 
-.reply-text {
-    color: var(--primary-color);
-    font-weight: bold;
-    margin: 4px 0 0 0;
+.news-badge {
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
 }
