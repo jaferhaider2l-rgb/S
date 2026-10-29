@@ -111,8 +111,8 @@
                     <textarea id="adminNewsText" placeholder="نص التبليغ..."></textarea>
                     <label class="file-upload-label">
                         🖼️ اختر صورة التبليغ من المعرض:
-                        <!-- تم إضافة خاصية الفتح المباشر للمعرض والصور -->
-                        <input type="file" id="adminNewsImgFile" accept="image/*" capture="environment" style="display:none;" onchange="previewNewsImage(event)">
+                        <!-- تم التعديل هنا لفتح المعرض والوسائط مباشرة -->
+                        <input type="file" id="adminNewsImgFile" accept="image/*" style="display:none;" onchange="previewNewsImage(event)">
                     </label>
                     <span id="newsFileName" class="file-name">لم يتم اختيار صورة</span>
                     <button class="btn-primary" onclick="addNewsFromAdmin()">نشر التبليغ</button>
@@ -130,8 +130,8 @@
                     </select>
                     <label class="file-upload-label">
                         🖼️ اختر صورة الجدول الجديدة من المعرض:
-                        <!-- تم إضافة خاصية الفتح المباشر للمعرض والصور -->
-                        <input type="file" id="adminScheduleImgFile" accept="image/*" capture="environment" style="display:none;" onchange="previewScheduleImage(event)">
+                        <!-- تم التعديل هنا لفتح المعرض والوسائط مباشرة -->
+                        <input type="file" id="adminScheduleImgFile" accept="image/*" style="display:none;" onchange="previewScheduleImage(event)">
                     </label>
                     <span id="scheduleFileName" class="file-name">لم يتم اختيار صورة</span>
                     <button class="btn-primary" onclick="updateScheduleFromAdmin()">حفظ وتحديث جدول اليوم</button>
