@@ -7,12 +7,62 @@
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="abbas.png">
+    <style>
+        /* تنسيق مخصص وعصري ومتناسق لنافذة تأكيد الخروج مع الواجهة */
+        .custom-exit-modal .modal-content {
+            background: rgba(30, 41, 59, 0.95);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+        .custom-exit-modal h3 {
+            margin-bottom: 10px;
+            color: #60a5fa;
+            font-size: 20px;
+        }
+        .custom-exit-modal p {
+            color: #cbd5e1;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+        .exit-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .exit-btn-yes {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .exit-btn-yes:hover { background-color: #dc2626; }
+        .exit-btn-no {
+            background-color: #334155;
+            color: #f1f5f9;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .exit-btn-no:hover { background-color: #475569; }
+    </style>
 </head>
-<body id="pageBody">
+<body id="pageBody" class="dark-mode">
 
     <!-- الترويسة مع زر التبديل الليلي/النهاري -->
     <header class="hero-header">
-        <button id="themeToggleBtn" class="theme-btn" onclick="toggleTheme()" title="تغيير الوضع">🌙</button>
+        <button id="themeToggleBtn" class="theme-btn" onclick="toggleTheme()" title="تغيير الوضع">☀️</button>
         <h1 id="secretAdminTitle">مدرسة الهندية الابتدائية للبنين</h1>
         <p>البوابة الإلكترونية الذكية والتفاعلية</p>
     </header>
@@ -87,6 +137,18 @@
             </div>
         </section>
 
+        <!-- نافذة تأكيد الخروج المتناسقة مع شكل التطبيق -->
+        <div id="exitModal" class="modal custom-exit-modal">
+            <div class="modal-content">
+                <h3>🚪 تأكيد الخروج</h3>
+                <p>هل أنت متأكد من رغبتك في إغلاق التطبيق؟</p>
+                <div class="exit-buttons">
+                    <button class="exit-btn-yes" onclick="confirmExit()">نعم، خروج</button>
+                    <button class="exit-btn-no" onclick="closeExitModal()">إلغاء</button>
+                </div>
+            </div>
+        </div>
+
         <!-- نافذة كلمة المرور المنبثقة -->
         <div id="passwordModal" class="modal">
             <div class="modal-content custom-dialog">
@@ -111,7 +173,6 @@
                     <textarea id="adminNewsText" placeholder="نص التبليغ..."></textarea>
                     <label class="file-upload-label">
                         🖼️ اختر صورة التبليغ من المعرض:
-                        <!-- تم التعديل هنا لفتح المعرض والوسائط مباشرة -->
                         <input type="file" id="adminNewsImgFile" accept="image/*" style="display:none;" onchange="previewNewsImage(event)">
                     </label>
                     <span id="newsFileName" class="file-name">لم يتم اختيار صورة</span>
@@ -130,7 +191,6 @@
                     </select>
                     <label class="file-upload-label">
                         🖼️ اختر صورة الجدول الجديدة من المعرض:
-                        <!-- تم التعديل هنا لفتح المعرض والوسائط مباشرة -->
                         <input type="file" id="adminScheduleImgFile" accept="image/*" style="display:none;" onchange="previewScheduleImage(event)">
                     </label>
                     <span id="scheduleFileName" class="file-name">لم يتم اختيار صورة</span>
@@ -166,6 +226,10 @@
         <a href="#contact" class="nav-item" onclick="switchTab('contact', event)">
             <span class="nav-icon">✉️</span>
             <small>الشكاوى</small>
+        </a>
+        <a href="#" class="nav-item" onclick="openExitModal(event)">
+            <span class="nav-icon">🚪</span>
+            <small>خروج</small>
         </a>
     </nav>
 
@@ -203,6 +267,7 @@
         let tempNewsImage = "";
         let tempScheduleImage = "";
 
+        // جلب البيانات من السحابة عند الفتح
         async function loadDataFromCloud() {
             try {
                 const newsSnap = await getDocs(collection(db, "news"));
@@ -247,6 +312,20 @@
             document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             document.getElementById('scheduleImg').src = scheduleImages[day];
+        };
+
+        window.openExitModal = function(event) {
+            event.preventDefault();
+            document.getElementById('exitModal').style.display = 'block';
+        };
+
+        window.closeExitModal = function() {
+            document.getElementById('exitModal').style.display = 'none';
+        };
+
+        window.confirmExit = function() {
+            window.close();
+            window.location.href = "about:blank";
         };
 
         let clickCount = 0;
@@ -382,54 +461,4 @@
         };
 
         function renderComplaints() {
-            const adminList = document.getElementById('adminComplaintsList');
-            const publicList = document.getElementById('publicComplaintsList');
-
-            if(complaints.length === 0) {
-                adminList.innerHTML = `<p class="sub-text">لا توجد شكاوى جديدة حالياً.</p>`;
-                publicList.innerHTML = `<p class="sub-text">لم يتم إرسال أي شكوى بعد.</p>`;
-                return;
-            }
-
-            adminList.innerHTML = complaints.map((c, i) => `
-                <div class="admin-complaint-box" style="border: 1px solid #ddd; padding: 10px; margin-bottom: 8px; border-radius: 6px;">
-                    <strong>${c.name} (${c.phone})</strong>
-                    <p style="margin:4px 0;">${c.msg}</p>
-                    ${c.reply ? `<p class="reply-text" style="color: green;">رد الإدارة: ${c.reply}</p>` : `
-                        <input type="text" id="reply_${i}" placeholder="اكتب الرد هنا..." style="width:100%; margin-bottom:5px; padding:5px;">
-                        <button class="btn-primary" style="padding:6px; font-size:12px;" onclick="sendReply('${c.id}', ${i})">إرسال الرد</button>
-                    `}
-                </div>
-            `).join('');
-
-            publicList.innerHTML = complaints.map((c) => `
-                <div class="public-complaint-box" style="border: 1px solid #eee; padding: 10px; margin-bottom: 8px; border-radius: 6px;">
-                    <strong>السائل: ${c.name}</strong>
-                    <p class="complaint-msg" style="margin:4px 0;">الرسالة: ${c.msg}</p>
-                    <p class="reply-status ${c.reply ? 'replied' : ''}" style="font-weight: bold; color: ${c.reply ? 'green' : '#d97706'};">
-                        ${c.reply ? `✔ رد الإدارة: ${c.reply}` : '⏳ بانتظار رد الإدارة...'}
-                    </p>
-                </div>
-            `).join('');
-        }
-
-        window.sendReply = async function(complaintId, i) {
-            const replyText = document.getElementById(`reply_${i}`).value;
-            if(replyText) {
-                complaints[i].reply = replyText;
-                
-                try {
-                    const compRef = doc(db, "complaints", complaintId);
-                    await updateDoc(compRef, { reply: replyText });
-                } catch(e) {}
-
-                renderComplaints();
-                alert('تم إرسال الرد بنجاح ويمكن للجميع رؤيته الآن!');
-            } else {
-                alert('يرجى كتابة نص الرد أولاً.');
-            }
-        };
-    </script>
-
-</body>
-</html>
+            const adminList = document.getElementById('adminComplaintsList')
