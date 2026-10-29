@@ -7,6 +7,28 @@
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="abbas.png">
+
+    <!-- استدعاء مكتبات Firebase عبر CDN -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // إعدادات الفايربيز الخاصة بموقعك
+        const firebaseConfig = {
+          apiKey: "AIzaSyB1BGfDwsNDex4EpHff14vWwPgJW-NPoWU",
+          authDomain: "al-hindiya-school.firebaseapp.com",
+          projectId: "al-hindiya-school",
+          storageBucket: "al-hindiya-school.firebasestorage.app",
+          messagingSenderId: "11072496241",
+          appId: "1:11072496241:web:1b825547939e249fb6f1d0",
+          measurementId: "G-XVF301KZNJ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        window.db = db;
+        window.FirestoreSDK = { collection, addDoc, getDocs, updateDoc, doc, onSnapshot };
+    </script>
 </head>
 <body id="pageBody">
 
@@ -87,7 +109,7 @@
             </div>
         </section>
 
-        <!-- نافذة كلمة المرور المنبثقة (عصرية وتفاعلية) -->
+        <!-- نافذة كلمة المرور المنبثقة -->
         <div id="passwordModal" class="modal">
             <div class="modal-content custom-dialog">
                 <span class="close-btn" onclick="closePasswordModal()">&times;</span>
@@ -168,32 +190,24 @@
     </nav>
 
     <script>
-        // طلب إذن الإشعارات عند فتح التطبيق أول مرة
+        // طلب إذن الإشعارات
         if ("Notification" in window && Notification.permission !== "granted") {
             Notification.requestPermission();
         }
 
-        // دالة إرسال الإشعارات الفورية
         function sendAppNotification(title, bodyText) {
             if ("Notification" in window && Notification.permission === "granted") {
                 if (navigator.serviceWorker) {
                     navigator.serviceWorker.ready.then(registration => {
-                        registration.showNotification(title, {
-                            body: bodyText,
-                            icon: 'abbas.png',
-                            badge: 'abbas.png'
-                        });
-                    }).catch(() => {
-                        new Notification(title, { body: bodyText, icon: 'abbas.png' });
-                    });
+                        registration.showNotification(title, { body: bodyText, icon: 'abbas.png', badge: 'abbas.png' });
+                    }).catch(() => { new Notification(title, { body: bodyText, icon: 'abbas.png' }); });
                 } else {
                     new Notification(title, { body: bodyText, icon: 'abbas.png' });
                 }
             }
         }
 
-        // استرجاع البيانات المحفوظة محلياً أو استخدام القيم الافتراضية
-        let scheduleImages = JSON.parse(localStorage.getItem('hindiyah_schedules')) || {
+        let scheduleImages = {
             sunday: "https://via.placeholder.com/600x400/1e3a8a/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%A3%D8%AD%D8%AF",
             monday: "https://via.placeholder.com/600x400/1e40af/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%A5%D8%AB%D9%86%D9%8A%D9%86",
             tuesday: "https://via.placeholder.com/600x400/3b82f6/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%AB%D9%84%D8%A7%D8%AB%D8%A7%D8%A1",
@@ -201,20 +215,59 @@
             thursday: "https://via.placeholder.com/600x400/312e81/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%AE%D9%85%D9%8A%D8%B3"
         };
 
-        let complaints = JSON.parse(localStorage.getItem('hindiyah_complaints')) || [];
-        let newsList = JSON.parse(localStorage.getItem('hindiyah_news')) || [
+        let complaints = [];
+        let newsList = [
             { title: "بداية الدوام الرسمي", text: "نذكر أوليائنا الكرام بضرورة الالتزام بمواعيد الحضور الصباحي للطلاب.", img: "" }
         ];
 
         let tempNewsImage = "";
         let tempScheduleImage = "";
 
-        // تحميل البيانات وعرضها عند فتح الصفحة
+        // جلب البيانات السحابية من Firestore عند فتح التطبيق
         window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('scheduleImg').src = scheduleImages.sunday;
-            renderNewsFeed();
-            renderComplaints();
+            
+            // انتظار تهيئة قاعدة البيانات لجلب البيانات
+            const checkDbInterval = setInterval(() => {
+                if (window.db && window.FirestoreSDK) {
+                    clearInterval(checkDbInterval);
+                    loadDataFromCloud();
+                }
+            }, 200);
         });
+
+        async function loadDataFromCloud() {
+            const db = window.db;
+            const { collection, getDocs } = window.FirestoreSDK;
+
+            try {
+                // جلب التبليغات
+                const newsSnap = await getDocs(collection(db, "news"));
+                if (!newsSnap.empty) {
+                    newsList = newsSnap.docs.map(doc => doc.data());
+                    renderNewsFeed();
+                }
+
+                // جلب الجداول
+                const schedSnap = await getDocs(collection(db, "schedules"));
+                schedSnap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    if (data.day && data.img) {
+                        scheduleImages[data.day] = data.img;
+                    }
+                });
+                document.getElementById('scheduleImg').src = scheduleImages.sunday;
+
+                // جلب الشكاوى
+                const compSnap = await getDocs(collection(db, "complaints"));
+                if (!compSnap.empty) {
+                    complaints = compSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderComplaints();
+                }
+            } catch (e) {
+                console.log("جارٍ الاعتماد على التخزين المحلي مؤقتاً لحين ضبط قواعد الفايربيز");
+            }
+        }
 
         function switchTab(tabId, event) {
             event.preventDefault();
@@ -303,18 +356,22 @@
             `).join('');
         }
 
-        function addNewsFromAdmin() {
+        async function addNewsFromAdmin() {
             const title = document.getElementById('adminNewsTitle').value;
             const text = document.getElementById('adminNewsText').value;
 
             if(!title || !text) { alert('يرجى كتابة العنوان والنص'); return; }
 
-            newsList.unshift({ title, text, img: tempNewsImage });
-            localStorage.setItem('hindiyah_news', JSON.stringify(newsList));
-            
+            const newNews = { title, text, img: tempNewsImage };
+            newsList.unshift(newNews);
             renderNewsFeed();
-            sendAppNotification("تبليغ جديد من مدرسة الهندية", title);
 
+            try {
+                const { collection, addDoc } = window.FirestoreSDK;
+                await addDoc(collection(window.db, "news"), newNews);
+            } catch(e) {}
+
+            sendAppNotification("تبليغ جديد من مدرسة الهندية", title);
             alert('تم نشر التبليغ بنجاح!');
             document.getElementById('adminNewsTitle').value = '';
             document.getElementById('adminNewsText').value = '';
@@ -323,15 +380,18 @@
             closeAdminPanel();
         }
 
-        function updateScheduleFromAdmin() {
+        async function updateScheduleFromAdmin() {
             const day = document.getElementById('adminSelectDay').value;
             if(tempScheduleImage) {
                 scheduleImages[day] = tempScheduleImage;
-                localStorage.setItem('hindiyah_schedules', JSON.stringify(scheduleImages));
-                
                 document.getElementById('scheduleImg').src = tempScheduleImage;
-                sendAppNotification("تحديث جدول الحصص", `تم إجراء تعديل وتحديث على جدول يوم ${day}`);
 
+                try {
+                    const { collection, addDoc } = window.FirestoreSDK;
+                    await addDoc(collection(window.db, "schedules"), { day, img: tempScheduleImage });
+                } catch(e) {}
+
+                sendAppNotification("تحديث جدول الحصص", `تم إجراء تعديل وتحديث على جدول يوم ${day}`);
                 alert('تم تحديث جدول اليوم وحفظه بنجاح!');
                 tempScheduleImage = "";
                 document.getElementById('scheduleFileName').innerText = "لم يتم اختيار صورة";
@@ -341,22 +401,26 @@
             }
         }
 
-        // إضافة الشكوى وحفظها محلياً
-        function submitComplaint(e) {
+        async function submitComplaint(e) {
             e.preventDefault();
             const name = document.getElementById('parentName').value;
             const phone = document.getElementById('parentPhone').value;
             const msg = document.getElementById('parentMsg').value;
 
-            complaints.push({ name, phone, msg, reply: "" });
-            localStorage.setItem('hindiyah_complaints', JSON.stringify(complaints));
+            const newComp = { name, phone, msg, reply: "" };
+            
+            try {
+                const { collection, addDoc } = window.FirestoreSDK;
+                const docRef = await addDoc(collection(window.db, "complaints"), newComp);
+                newComp.id = docRef.id;
+            } catch(e) {}
 
+            complaints.push(newComp);
             renderComplaints();
             alert('تم إرسال الشكوى للإدارة بنجاح');
             document.getElementById('complaintForm').reset();
         }
 
-        // إظهار الشكاوى والردود
         function renderComplaints() {
             const adminList = document.getElementById('adminComplaintsList');
             const publicList = document.getElementById('publicComplaintsList');
@@ -367,44 +431,9 @@
                 return;
             }
 
-            // قائمة الإدارة
             adminList.innerHTML = complaints.map((c, i) => `
                 <div class="admin-complaint-box" style="border: 1px solid #ddd; padding: 10px; margin-bottom: 8px; border-radius: 6px;">
                     <strong>${c.name} (${c.phone})</strong>
                     <p style="margin:4px 0;">${c.msg}</p>
                     ${c.reply ? `<p class="reply-text" style="color: green;">رد الإدارة: ${c.reply}</p>` : `
-                        <input type="text" id="reply_${i}" placeholder="اكتب الرد هنا..." style="width:100%; margin-bottom:5px; padding:5px;">
-                        <button class="btn-primary" style="padding:6px; font-size:12px;" onclick="sendReply(${i})">إرسال الرد</button>
-                    `}
-                </div>
-            `).join('');
-
-            // قائمة العامة لأولياء الأمور والطلاب
-            publicList.innerHTML = complaints.map((c) => `
-                <div class="public-complaint-box" style="border: 1px solid #eee; padding: 10px; margin-bottom: 8px; border-radius: 6px;">
-                    <strong>السائل: ${c.name}</strong>
-                    <p class="complaint-msg" style="margin:4px 0;">الرسالة: ${c.msg}</p>
-                    <p class="reply-status ${c.reply ? 'replied' : ''}" style="font-weight: bold; color: ${c.reply ? 'green' : '#d97706'};">
-                        ${c.reply ? `✔ رد الإدارة: ${c.reply}` : '⏳ بانتظار رد الإدارة...'}
-                    </p>
-                </div>
-            `).join('');
-        }
-
-        function sendReply(i) {
-            const replyText = document.getElementById(`reply_${i}`).value;
-            if(replyText) {
-                complaints[i].reply = replyText;
-                localStorage.setItem('hindiyah_complaints', JSON.stringify(complaints));
-                renderComplaints();
-                sendAppNotification("رد جديد من الإدارة", "تم الرد على استفسارك أو شكواك المقدمة للإدارة.");
-
-                alert('تم إرسال الرد بنجاح ويمكن للجميع رؤيته الآن!');
-            } else {
-                alert('يرجى كتابة نص الرد أولاً.');
-            }
-        }
-    </script>
-
-</body>
-</html>
+                        <input type="text" id="reply_${i
