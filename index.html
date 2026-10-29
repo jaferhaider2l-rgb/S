@@ -7,28 +7,6 @@
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="abbas.png">
-
-    <!-- استدعاء مكتبات Firebase عبر CDN -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        // إعدادات الفايربيز الخاصة بموقعك
-        const firebaseConfig = {
-          apiKey: "AIzaSyB1BGfDwsNDex4EpHff14vWwPgJW-NPoWU",
-          authDomain: "al-hindiya-school.firebaseapp.com",
-          projectId: "al-hindiya-school",
-          storageBucket: "al-hindiya-school.firebasestorage.app",
-          messagingSenderId: "11072496241",
-          appId: "1:11072496241:web:1b825547939e249fb6f1d0",
-          measurementId: "G-XVF301KZNJ"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        window.db = db;
-        window.FirestoreSDK = { collection, addDoc, getDocs, updateDoc, doc, onSnapshot };
-    </script>
 </head>
 <body id="pageBody">
 
@@ -114,8 +92,8 @@
             <div class="modal-content custom-dialog">
                 <span class="close-btn" onclick="closePasswordModal()">&times;</span>
                 <h3>🔐 تسجيل الدخول للإدارة</h3>
-                <p class="sub-text">أدخل كلمة المرور للوصول إلى لوحة التحكم:</p>
-                <input type="password" id="adminPassInput" placeholder="كلمة المرور (2027)">
+                <p class="sub-text">أدخل رمز الدخول للوصول إلى لوحة التحكم:</p>
+                <input type="password" id="adminPassInput" placeholder="أدخل الرمز السري">
                 <button class="btn-primary" onclick="verifyPassword()">دخول</button>
             </div>
         </div>
@@ -133,7 +111,8 @@
                     <textarea id="adminNewsText" placeholder="نص التبليغ..."></textarea>
                     <label class="file-upload-label">
                         🖼️ اختر صورة التبليغ من المعرض:
-                        <input type="file" id="adminNewsImgFile" accept="image/*" style="display:none;" onchange="previewNewsImage(event)">
+                        <!-- تم إضافة خاصية الفتح المباشر للمعرض والصور -->
+                        <input type="file" id="adminNewsImgFile" accept="image/*" capture="environment" style="display:none;" onchange="previewNewsImage(event)">
                     </label>
                     <span id="newsFileName" class="file-name">لم يتم اختيار صورة</span>
                     <button class="btn-primary" onclick="addNewsFromAdmin()">نشر التبليغ</button>
@@ -151,7 +130,8 @@
                     </select>
                     <label class="file-upload-label">
                         🖼️ اختر صورة الجدول الجديدة من المعرض:
-                        <input type="file" id="adminScheduleImgFile" accept="image/*" style="display:none;" onchange="previewScheduleImage(event)">
+                        <!-- تم إضافة خاصية الفتح المباشر للمعرض والصور -->
+                        <input type="file" id="adminScheduleImgFile" accept="image/*" capture="environment" style="display:none;" onchange="previewScheduleImage(event)">
                     </label>
                     <span id="scheduleFileName" class="file-name">لم يتم اختيار صورة</span>
                     <button class="btn-primary" onclick="updateScheduleFromAdmin()">حفظ وتحديث جدول اليوم</button>
@@ -189,23 +169,23 @@
         </a>
     </nav>
 
-    <script>
-        // طلب إذن الإشعارات
-        if ("Notification" in window && Notification.permission !== "granted") {
-            Notification.requestPermission();
-        }
+    <!-- سكريبت التشغيل وربط Firebase والواجهة -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        function sendAppNotification(title, bodyText) {
-            if ("Notification" in window && Notification.permission === "granted") {
-                if (navigator.serviceWorker) {
-                    navigator.serviceWorker.ready.then(registration => {
-                        registration.showNotification(title, { body: bodyText, icon: 'abbas.png', badge: 'abbas.png' });
-                    }).catch(() => { new Notification(title, { body: bodyText, icon: 'abbas.png' }); });
-                } else {
-                    new Notification(title, { body: bodyText, icon: 'abbas.png' });
-                }
-            }
-        }
+        const firebaseConfig = {
+          apiKey: "AIzaSyB1BGfDwsNDex4EpHff14vWwPgJW-NPoWU",
+          authDomain: "al-hindiya-school.firebaseapp.com",
+          projectId: "al-hindiya-school",
+          storageBucket: "al-hindiya-school.firebasestorage.app",
+          messagingSenderId: "11072496241",
+          appId: "1:11072496241:web:1b825547939e249fb6f1d0",
+          measurementId: "G-XVF301KZNJ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
         let scheduleImages = {
             sunday: "https://via.placeholder.com/600x400/1e3a8a/FFFFFF?text=%D8%AC%D8%AF%D9%88%D9%84+%D9%8A%D9%88%D9%85+%D8%A7%D9%84%D8%A3%D8%AD%D8%AF",
@@ -223,32 +203,14 @@
         let tempNewsImage = "";
         let tempScheduleImage = "";
 
-        // جلب البيانات السحابية من Firestore عند فتح التطبيق
-        window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('scheduleImg').src = scheduleImages.sunday;
-            
-            // انتظار تهيئة قاعدة البيانات لجلب البيانات
-            const checkDbInterval = setInterval(() => {
-                if (window.db && window.FirestoreSDK) {
-                    clearInterval(checkDbInterval);
-                    loadDataFromCloud();
-                }
-            }, 200);
-        });
-
         async function loadDataFromCloud() {
-            const db = window.db;
-            const { collection, getDocs } = window.FirestoreSDK;
-
             try {
-                // جلب التبليغات
                 const newsSnap = await getDocs(collection(db, "news"));
                 if (!newsSnap.empty) {
                     newsList = newsSnap.docs.map(doc => doc.data());
                     renderNewsFeed();
                 }
 
-                // جلب الجداول
                 const schedSnap = await getDocs(collection(db, "schedules"));
                 schedSnap.forEach(docSnap => {
                     const data = docSnap.data();
@@ -258,32 +220,35 @@
                 });
                 document.getElementById('scheduleImg').src = scheduleImages.sunday;
 
-                // جلب الشكاوى
                 const compSnap = await getDocs(collection(db, "complaints"));
                 if (!compSnap.empty) {
                     complaints = compSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     renderComplaints();
                 }
             } catch (e) {
-                console.log("جارٍ الاعتماد على التخزين المحلي مؤقتاً لحين ضبط قواعد الفايربيز");
+                console.log("الوضع المحلي نشط");
             }
         }
 
-        function switchTab(tabId, event) {
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('scheduleImg').src = scheduleImages.sunday;
+            loadDataFromCloud();
+        });
+
+        window.switchTab = function(tabId, event) {
             event.preventDefault();
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             event.currentTarget.classList.add('active');
-        }
+        };
 
-        function showDaySchedule(day, btn) {
+        window.showDaySchedule = function(day, btn) {
             document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             document.getElementById('scheduleImg').src = scheduleImages[day];
-        }
+        };
 
-        // 3 ضغطات لفتح نافذة كلمة المرور
         let clickCount = 0;
         let clickTimer = null;
 
@@ -298,33 +263,33 @@
             }
         });
 
-        function closePasswordModal() {
+        window.closePasswordModal = function() {
             document.getElementById('passwordModal').style.display = 'none';
             document.getElementById('adminPassInput').value = '';
-        }
+        };
 
-        function verifyPassword() {
+        window.verifyPassword = function() {
             const pass = document.getElementById('adminPassInput').value;
             if(pass === "2027") {
-                closePasswordModal();
+                window.closePasswordModal();
                 document.getElementById('adminModal').style.display = 'block';
             } else {
-                alert("كلمة المرور غير صحيحة!");
+                alert("رمز الدخول غير صحيح!");
             }
-        }
+        };
 
-        function closeAdminPanel() {
+        window.closeAdminPanel = function() {
             document.getElementById('adminModal').style.display = 'none';
-        }
+        };
 
-        function toggleTheme() {
+        window.toggleTheme = function() {
             const body = document.getElementById('pageBody');
             body.classList.toggle('dark-mode');
             const btn = document.getElementById('themeToggleBtn');
             btn.innerText = body.classList.contains('dark-mode') ? "☀️" : "🌙";
-        }
+        };
 
-        function previewNewsImage(event) {
+        window.previewNewsImage = function(event) {
             const file = event.target.files[0];
             if (file) {
                 document.getElementById('newsFileName').innerText = file.name;
@@ -332,9 +297,9 @@
                 reader.onload = function(e) { tempNewsImage = e.target.result; }
                 reader.readAsDataURL(file);
             }
-        }
+        };
 
-        function previewScheduleImage(event) {
+        window.previewScheduleImage = function(event) {
             const file = event.target.files[0];
             if (file) {
                 document.getElementById('scheduleFileName').innerText = file.name;
@@ -342,7 +307,7 @@
                 reader.onload = function(e) { tempScheduleImage = e.target.result; }
                 reader.readAsDataURL(file);
             }
-        }
+        };
 
         function renderNewsFeed() {
             const newsContainer = document.getElementById('newsFeed');
@@ -356,7 +321,7 @@
             `).join('');
         }
 
-        async function addNewsFromAdmin() {
+        window.addNewsFromAdmin = async function() {
             const title = document.getElementById('adminNewsTitle').value;
             const text = document.getElementById('adminNewsText').value;
 
@@ -367,41 +332,37 @@
             renderNewsFeed();
 
             try {
-                const { collection, addDoc } = window.FirestoreSDK;
-                await addDoc(collection(window.db, "news"), newNews);
+                await addDoc(collection(db, "news"), newNews);
             } catch(e) {}
 
-            sendAppNotification("تبليغ جديد من مدرسة الهندية", title);
             alert('تم نشر التبليغ بنجاح!');
             document.getElementById('adminNewsTitle').value = '';
             document.getElementById('adminNewsText').value = '';
             tempNewsImage = "";
             document.getElementById('newsFileName').innerText = "لم يتم اختيار صورة";
-            closeAdminPanel();
-        }
+            window.closeAdminPanel();
+        };
 
-        async function updateScheduleFromAdmin() {
+        window.updateScheduleFromAdmin = async function() {
             const day = document.getElementById('adminSelectDay').value;
             if(tempScheduleImage) {
                 scheduleImages[day] = tempScheduleImage;
                 document.getElementById('scheduleImg').src = tempScheduleImage;
 
                 try {
-                    const { collection, addDoc } = window.FirestoreSDK;
-                    await addDoc(collection(window.db, "schedules"), { day, img: tempScheduleImage });
+                    await addDoc(collection(db, "schedules"), { day, img: tempScheduleImage });
                 } catch(e) {}
 
-                sendAppNotification("تحديث جدول الحصص", `تم إجراء تعديل وتحديث على جدول يوم ${day}`);
                 alert('تم تحديث جدول اليوم وحفظه بنجاح!');
                 tempScheduleImage = "";
                 document.getElementById('scheduleFileName').innerText = "لم يتم اختيار صورة";
-                closeAdminPanel();
+                window.closeAdminPanel();
             } else {
                 alert('يرجى اختيار صورة أولاً من المعرض');
             }
-        }
+        };
 
-        async function submitComplaint(e) {
+        window.submitComplaint = async function(e) {
             e.preventDefault();
             const name = document.getElementById('parentName').value;
             const phone = document.getElementById('parentPhone').value;
@@ -410,8 +371,7 @@
             const newComp = { name, phone, msg, reply: "" };
             
             try {
-                const { collection, addDoc } = window.FirestoreSDK;
-                const docRef = await addDoc(collection(window.db, "complaints"), newComp);
+                const docRef = await addDoc(collection(db, "complaints"), newComp);
                 newComp.id = docRef.id;
             } catch(e) {}
 
@@ -419,7 +379,7 @@
             renderComplaints();
             alert('تم إرسال الشكوى للإدارة بنجاح');
             document.getElementById('complaintForm').reset();
-        }
+        };
 
         function renderComplaints() {
             const adminList = document.getElementById('adminComplaintsList');
@@ -436,4 +396,40 @@
                     <strong>${c.name} (${c.phone})</strong>
                     <p style="margin:4px 0;">${c.msg}</p>
                     ${c.reply ? `<p class="reply-text" style="color: green;">رد الإدارة: ${c.reply}</p>` : `
-                        <input type="text" id="reply_${i
+                        <input type="text" id="reply_${i}" placeholder="اكتب الرد هنا..." style="width:100%; margin-bottom:5px; padding:5px;">
+                        <button class="btn-primary" style="padding:6px; font-size:12px;" onclick="sendReply('${c.id}', ${i})">إرسال الرد</button>
+                    `}
+                </div>
+            `).join('');
+
+            publicList.innerHTML = complaints.map((c) => `
+                <div class="public-complaint-box" style="border: 1px solid #eee; padding: 10px; margin-bottom: 8px; border-radius: 6px;">
+                    <strong>السائل: ${c.name}</strong>
+                    <p class="complaint-msg" style="margin:4px 0;">الرسالة: ${c.msg}</p>
+                    <p class="reply-status ${c.reply ? 'replied' : ''}" style="font-weight: bold; color: ${c.reply ? 'green' : '#d97706'};">
+                        ${c.reply ? `✔ رد الإدارة: ${c.reply}` : '⏳ بانتظار رد الإدارة...'}
+                    </p>
+                </div>
+            `).join('');
+        }
+
+        window.sendReply = async function(complaintId, i) {
+            const replyText = document.getElementById(`reply_${i}`).value;
+            if(replyText) {
+                complaints[i].reply = replyText;
+                
+                try {
+                    const compRef = doc(db, "complaints", complaintId);
+                    await updateDoc(compRef, { reply: replyText });
+                } catch(e) {}
+
+                renderComplaints();
+                alert('تم إرسال الرد بنجاح ويمكن للجميع رؤيته الآن!');
+            } else {
+                alert('يرجى كتابة نص الرد أولاً.');
+            }
+        };
+    </script>
+
+</body>
+</html>
