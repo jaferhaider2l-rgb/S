@@ -66,7 +66,7 @@
             </div>
         </section>
 
-        <!-- قسم الشكاوى والتواصل مع الرمز السري -->
+        <!-- قسم الشكاوى والتواصل بالرمز السري -->
         <section id="contact" class="tab-content">
             <div class="card">
                 <h2>✉️ الشكاوى والمقترحات السرية</h2>
@@ -82,7 +82,7 @@
                 <h2>🔐 متابعة الشكوى بالرمز السري</h2>
                 <p class="sub-text">أدخل الرمز السري الذي اخترته عند إرسال الشكوى للاطلاع على رد الإدارة:</p>
                 <input type="password" id="checkPinInput" placeholder="أدخل الرمز السري الخاص بك...">
-                <button class="btn-primary" onclick="checkMyComplaint()">عرض الشكوى والرد</button>
+                <button type="button" class="btn-primary" onclick="checkMyComplaint()">عرض الشكوى والرد</button>
                 
                 <div id="myComplaintResult" style="margin-top: 15px;">
                     <p class="sub-text">لم يتم إدخال الرمز السري بعد.</p>
@@ -97,7 +97,7 @@
                 <h3>🔐 تسجيل الدخول للإدارة</h3>
                 <p class="sub-text">أدخل رمز الدخول للوصول إلى لوحة التحكم:</p>
                 <input type="password" id="adminPassInput" placeholder="أدخل الرمز السري">
-                <button class="btn-primary" onclick="verifyPassword()">دخول</button>
+                <button type="button" class="btn-primary" onclick="verifyPassword()">دخول</button>
             </div>
         </div>
 
@@ -117,7 +117,7 @@
                         <input type="file" id="adminNewsImgFile" accept="image/*" style="display:none;" onchange="previewNewsImage(event)">
                     </label>
                     <span id="newsFileName" class="file-name">لم يتم اختيار صورة</span>
-                    <button class="btn-primary" onclick="addNewsFromAdmin()">نشر التبليغ</button>
+                    <button type="button" class="btn-primary" onclick="addNewsFromAdmin()">نشر التبليغ</button>
                 </div>
 
                 <!-- تحديث جدول اليوم -->
@@ -135,7 +135,7 @@
                         <input type="file" id="adminScheduleImgFile" accept="image/*" style="display:none;" onchange="previewScheduleImage(event)">
                     </label>
                     <span id="scheduleFileName" class="file-name">لم يتم اختيار صورة</span>
-                    <button class="btn-primary" onclick="updateScheduleFromAdmin()">حفظ وتحديث جدول اليوم</button>
+                    <button type="button" class="btn-primary" onclick="updateScheduleFromAdmin()">حفظ وتحديث جدول اليوم</button>
                 </div>
 
                 <!-- الشكاوى الواردة للإدارة مع أدوات التعديل والحذف -->
@@ -170,7 +170,7 @@
         </a>
     </nav>
 
-    <!-- سكريبت التشغيل -->
+    <!-- سكريبت التشغيل وربط الدوال بـ window لضمان استجابة الأزرار -->
     <script>
         let scheduleImages = JSON.parse(localStorage.getItem('school_schedules')) || {
             sunday: "", monday: "", tuesday: "", wednesday: "", thursday: ""
@@ -206,16 +206,19 @@
             renderNewsFeed();
             renderComplaints();
 
-            document.getElementById('secretAdminTitle').addEventListener('click', function() {
-                clickCount++;
-                if(clickCount === 1) {
-                    clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
-                } else if(clickCount === 3) {
-                    clearTimeout(clickTimer);
-                    clickCount = 0;
-                    document.getElementById('passwordModal').style.display = 'block';
-                }
-            });
+            const titleEl = document.getElementById('secretAdminTitle');
+            if(titleEl) {
+                titleEl.addEventListener('click', function() {
+                    clickCount++;
+                    if(clickCount === 1) {
+                        clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
+                    } else if(clickCount === 3) {
+                        clearTimeout(clickTimer);
+                        clickCount = 0;
+                        document.getElementById('passwordModal').style.display = 'block';
+                    }
+                });
+            }
         });
 
         window.closePasswordModal = function() {
@@ -267,6 +270,7 @@
 
         function renderNewsFeed() {
             const newsContainer = document.getElementById('newsFeed');
+            if(!newsContainer) return;
             newsContainer.innerHTML = newsList.map(n => `
                 <div class="news-card">
                     <span class="news-badge">عاجل</span>
@@ -349,15 +353,15 @@
                         <div style="background: rgba(56, 189, 248, 0.1); padding: 8px; border-radius: 8px; margin: 8px 0;">
                             <p style="color: #38bdf8; font-weight: bold; margin: 0 0 6px 0;">الرد: ${c.reply}</p>
                             <input type="text" id="edit_reply_${i}" value="${c.reply}" style="width:100%; margin-bottom:6px; padding:6px; font-size:12px;">
-                            <button class="btn-primary" style="padding:6px 12px; font-size:11px; margin-top:0; width:auto; display:inline-block;" onclick="updateReply(${i})">تعديل الرد</button>
-                            <button style="background:#ef4444; color:white; border:none; padding:6px 12px; border-radius:8px; font-size:11px; cursor:pointer; margin-right:6px;" onclick="deleteReply(${i})">حذف الرد</button>
+                            <button type="button" class="btn-primary" style="padding:6px 12px; font-size:11px; margin-top:0; width:auto; display:inline-block;" onclick="updateReply(${i})">تعديل الرد</button>
+                            <button type="button" style="background:#ef4444; color:white; border:none; padding:6px 12px; border-radius:8px; font-size:11px; cursor:pointer; margin-right:6px;" onclick="deleteReply(${i})">حذف الرد</button>
                         </div>
                     ` : `
                         <input type="text" id="reply_${i}" placeholder="اكتب الرد هنا..." style="width:100%; margin:8px 0; padding:8px;">
-                        <button class="btn-primary" style="padding:8px; font-size:12px; margin-top:0;" onclick="sendReply(${i})">إرسال الرد</button>
+                        <button type="button" class="btn-primary" style="padding:8px; font-size:12px; margin-top:0;" onclick="sendReply(${i})">إرسال الرد</button>
                     `}
 
-                    <button style="background: transparent; color: #f43f5e; border: 1px solid #f43f5e; padding: 4px 10px; border-radius: 8px; font-size: 11px; cursor: pointer; margin-top: 10px;" onclick="deleteComplaint(${i})">🗑️ حذف الشكوى بالكامل</button>
+                    <button type="button" style="background: transparent; color: #f43f5e; border: 1px solid #f43f5e; padding: 4px 10px; border-radius: 8px; font-size: 11px; cursor: pointer; margin-top: 10px;" onclick="deleteComplaint(${i})">🗑️ حذف الشكوى بالكامل</button>
                 </div>
             `).join('');
         }
@@ -418,11 +422,4 @@
             const found = complaints.filter(c => c.secretPin === pin);
 
             if(found.length === 0) {
-                resultDiv.innerHTML = `<p class="sub-text" style="color: #f43f5e;">❌ الرمز السري غير صحيح أو لا توجد شكوى مسجلة بهذا الرمز.</p>`;
-                return;
-            }
-
-            resultDiv.innerHTML = found.map(c => `
-                <div class="admin-complaint-box" style="border-color: #38bdf8; margin-top: 10px;">
-                    <strong>المرسل: ${c.name}</strong>
-                    <p styl
+                resultDiv.innerHTML = `<p class="sub-text" style="color: #f43f5e;">❌ الرمز السري غير صحيح أ
