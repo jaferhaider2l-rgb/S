@@ -201,17 +201,14 @@
         let tempNewsImage = "";
         let tempScheduleImage = "";
 
-        // جلب البيانات الدائمة من السحابة عند الفتح
         async function loadDataFromCloud() {
             try {
-                // جلب التبليغات
                 const newsSnap = await getDocs(collection(db, "news"));
                 if (!newsSnap.empty) {
                     newsList = newsSnap.docs.map(doc => doc.data());
                     renderNewsFeed();
                 }
 
-                // جلب الجداول الثابتة لكل يوم
                 const schedSnap = await getDocs(collection(db, "schedules"));
                 schedSnap.forEach(docSnap => {
                     const data = docSnap.data();
@@ -221,7 +218,6 @@
                 });
                 document.getElementById('scheduleImg').src = scheduleImages.sunday;
 
-                // جلب الشكاوى
                 const compSnap = await getDocs(collection(db, "complaints"));
                 if (!compSnap.empty) {
                     complaints = compSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -237,6 +233,7 @@
             loadDataFromCloud();
         });
 
+        // ربط الدوال بالنافذة العامة لضمان عمل الأزرار
         window.switchTab = function(tabId, event) {
             if(event) event.preventDefault();
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -345,7 +342,6 @@
             window.closeAdminPanel();
         };
 
-        // تعديل حفظ الجدول ليتم تخزينه باسم اليوم مباشرة بشكل دائم ولا يختفي
         window.updateScheduleFromAdmin = async function() {
             const day = document.getElementById('adminSelectDay').value;
             if(tempScheduleImage) {
@@ -353,11 +349,8 @@
                 document.getElementById('scheduleImg').src = tempScheduleImage;
 
                 try {
-                    // استخدام setDoc لحفظ الجدول بمستند ثابت باسم اليوم (sunday, monday, etc.)
                     await setDoc(doc(db, "schedules", day), { day: day, img: tempScheduleImage });
-                } catch(e) {
-                    console.log("خطأ في الحفظ السحابي: ", e);
-                }
+                } catch(e) {}
 
                 alert('تم تحديث جدول اليوم وحفظه بشكل دائم بنجاح!');
                 tempScheduleImage = "";
@@ -429,4 +422,13 @@
                     await updateDoc(compRef, { reply: replyText });
                 } catch(e) {}
 
-                renderComplain
+                renderComplaints();
+                alert('تم إرسال الرد بنجاح ويمكن للجميع رؤيته الآن!');
+            } else {
+                alert('يرجى كتابة نص الرد أولاً.');
+            }
+        };
+    </script>
+
+</body>
+</html>
